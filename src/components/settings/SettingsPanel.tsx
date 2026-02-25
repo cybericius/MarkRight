@@ -1,5 +1,6 @@
 import { Component, onMount, onCleanup, createSignal } from "solid-js";
 import { Show } from "solid-js/web";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   setShowSettings,
   fontFamilyUi,
@@ -233,7 +234,15 @@ const LicenseSection: Component = () => {
         when={licenseStatus().valid}
         fallback={
           <div class="space-y-2">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Free tier</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Free tier —{" "}
+              <button
+                onClick={() => openUrl("https://buy.polar.sh/polar_cl_US7q3B0057nkiNtmToO7TegiQc6b6EMUeDD5k1ip2kD")}
+                class="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                Get a Pro license
+              </button>
+            </p>
             <textarea
               value={keyInput()}
               onInput={(e) => setKeyInput(e.currentTarget.value)}

@@ -23,7 +23,7 @@ async function handlePolarWebhook(
 
   let payload;
   try {
-    payload = verifyPolarWebhook(body, request.headers, env.POLAR_WEBHOOK_SECRET);
+    payload = await verifyPolarWebhook(body, request.headers, env.POLAR_WEBHOOK_SECRET);
   } catch {
     return new Response("Invalid webhook signature", { status: 401 });
   }

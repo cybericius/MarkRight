@@ -4,7 +4,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 
 const UpgradePrompt: Component = () => {
   const handleDonate = () => {
-    openUrl("https://polar.sh/cybericius");
+    openUrl("https://buy.polar.sh/polar_cl_US7q3B0057nkiNtmToO7TegiQc6b6EMUeDD5k1ip2kD");
   };
 
   const handleHaveKey = () => {

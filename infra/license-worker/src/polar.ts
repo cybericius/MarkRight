@@ -1,28 +1,48 @@
-import { Webhook } from "svix";
 import type { PolarOrderPayload } from "./types";
 
 /**
- * Verify a Polar.sh webhook signature and parse the payload.
+ * Verify a Polar.sh webhook using the Standard Webhooks spec (HMAC-SHA256).
  *
- * Polar uses Svix for webhook delivery; signature is verified
- * using the svix-id, svix-timestamp, and svix-signature headers.
+ * Polar's webhook secret is used as-is (full UTF-8 bytes) as the HMAC key.
  */
-export function verifyPolarWebhook(
+export async function verifyPolarWebhook(
   body: string,
   headers: Headers,
   secret: string,
-): PolarOrderPayload {
-  const wh = new Webhook(secret);
+): Promise<PolarOrderPayload> {
+  const msgId = headers.get("webhook-id") ?? headers.get("svix-id") ?? "";
+  const msgTimestamp = headers.get("webhook-timestamp") ?? headers.get("svix-timestamp") ?? "";
+  const msgSignature = headers.get("webhook-signature") ?? headers.get("svix-signature") ?? "";
 
-  const svixId = headers.get("svix-id") ?? "";
-  const svixTimestamp = headers.get("svix-timestamp") ?? "";
-  const svixSignature = headers.get("svix-signature") ?? "";
+  if (!msgId || !msgTimestamp || !msgSignature) {
+    throw new Error("Missing webhook signature headers");
+  }
 
-  const payload = wh.verify(body, {
-    "svix-id": svixId,
-    "svix-timestamp": svixTimestamp,
-    "svix-signature": svixSignature,
-  }) as PolarOrderPayload;
+  const encoder = new TextEncoder();
+  const secretBytes = encoder.encode(secret);
 
-  return payload;
+  const toSign = `${msgId}.${msgTimestamp}.${body}`;
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    secretBytes,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(toSign));
+  const expectedSig = btoa(String.fromCharCode(...new Uint8Array(signature)));
+
+  const signatures = msgSignature.split(" ");
+  const verified = signatures.some((sig) => {
+    const sigValue = sig.startsWith("v1,") ? sig.slice(3) : sig;
+    return sigValue === expectedSig;
+  });
+
+  if (!verified) {
+    throw new Error("Webhook signature mismatch");
+  }
+
+  return JSON.parse(body) as PolarOrderPayload;
 }
