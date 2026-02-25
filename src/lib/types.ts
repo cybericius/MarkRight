@@ -79,4 +79,6 @@ export interface AppConfig {
   font_family_content: string;
   font_size_content: number;
   line_height_content: number;
+  zoom: number;
+  content_width: "default" | "fit" | "a4";
 }

@@ -12,6 +12,8 @@ import {
   showLeftPanel,
   showRightPanel,
   theme,
+  zoom,
+  contentWidth,
   licenseStatus,
 } from "../../stores/app";
 import { updateConfig, activateLicense } from "../../stores/actions";
@@ -41,6 +43,36 @@ const SettingsPanel: Component = () => {
             ✕
           </button>
         </div>
+
+        {/* View */}
+        <Section title="View">
+          <Row label="Zoom">
+            <RangeInput
+              value={zoom()}
+              min={25}
+              max={300}
+              step={5}
+              unit="%"
+              onChange={(v) => updateConfig({ zoom: v })}
+            />
+          </Row>
+          <Row label="Content Width">
+            <div class="flex gap-3">
+              {(["default", "fit", "a4"] as const).map((w) => (
+                <label class="flex cursor-pointer items-center gap-1.5 text-sm">
+                  <input
+                    type="radio"
+                    name="content-width"
+                    checked={contentWidth() === w}
+                    onChange={() => updateConfig({ content_width: w })}
+                    class="accent-blue-500"
+                  />
+                  {w === "default" ? "Default" : w === "fit" ? "Fit Width" : "A4"}
+                </label>
+              ))}
+            </div>
+          </Row>
+        </Section>
 
         {/* Content Font */}
         <Section title="Content Font">

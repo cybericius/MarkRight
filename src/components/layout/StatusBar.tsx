@@ -6,6 +6,8 @@ import {
   setShowSettings,
   isLicensed,
   licenseStatus,
+  zoom,
+  contentWidth,
 } from "../../stores/app";
 import { updateConfig } from "../../stores/actions";
 
@@ -23,6 +25,41 @@ const StatusBar: Component = () => {
         <Show when={currentPath()} fallback={<span>MarkRight v0.1.0</span>}>
           <span class="truncate">{currentPath()}</span>
         </Show>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button
+          class="rounded px-1 hover:text-gray-700 dark:hover:text-gray-200"
+          onClick={() => updateConfig({ zoom: Math.max(25, zoom() - 10) })}
+          title="Zoom out (Ctrl+-)"
+        >
+          −
+        </button>
+        <button
+          class="min-w-[3.5em] rounded px-1 text-center hover:text-gray-700 dark:hover:text-gray-200"
+          onClick={() => updateConfig({ zoom: 100 })}
+          title="Reset zoom (Ctrl+0)"
+        >
+          {zoom()}%
+        </button>
+        <button
+          class="rounded px-1 hover:text-gray-700 dark:hover:text-gray-200"
+          onClick={() => updateConfig({ zoom: Math.min(300, zoom() + 10) })}
+          title="Zoom in (Ctrl+=)"
+        >
+          +
+        </button>
+        <span class="mx-1 text-gray-300 dark:text-gray-600">|</span>
+        <button
+          class="rounded px-1 hover:text-gray-700 dark:hover:text-gray-200"
+          onClick={() => {
+            const modes = ["default", "fit", "a4"] as const;
+            const idx = modes.indexOf(contentWidth());
+            updateConfig({ content_width: modes[(idx + 1) % modes.length] });
+          }}
+          title="Content width mode"
+        >
+          {contentWidth() === "default" ? "Default" : contentWidth() === "fit" ? "Fit" : "A4"}
+        </button>
       </div>
       <div class="flex items-center gap-2">
         <Show when={isLicensed()}>
