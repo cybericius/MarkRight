@@ -1,4 +1,4 @@
-import { Component, createSignal } from "solid-js";
+import { Component } from "solid-js";
 import ThreePanel from "./components/layout/ThreePanel";
 
 const App: Component = () => {
