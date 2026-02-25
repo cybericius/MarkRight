@@ -179,4 +179,26 @@ mod tests {
         assert!(status.valid);
         assert_eq!(status.email.as_deref(), Some("test@example.com"));
     }
+
+    /// End-to-end: sign with production key, verify with production public key.
+    #[test]
+    fn production_token_roundtrip() {
+        let token = sign_token(
+            r#"{"email":"test@example.com","issued_at":"2026-02-25T00:00:00Z","tier":"pro"}"#,
+        );
+        let status = verify_license(&token);
+        assert!(status.valid, "Production-signed token must verify");
+        assert_eq!(status.email.as_deref(), Some("test@example.com"));
+        assert_eq!(status.tier.as_deref(), Some("pro"));
+    }
+
+    /// Verify an externally-generated token (from the signing tool).
+    #[test]
+    fn verify_externally_signed_token() {
+        let token = "REDACTED";
+        let status = verify_license(token);
+        assert!(status.valid, "Externally signed token must verify");
+        assert_eq!(status.email.as_deref(), Some("test@example.com"));
+        assert_eq!(status.tier.as_deref(), Some("pro"));
+    }
 }
