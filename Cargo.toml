@@ -1,0 +1,3 @@
+[workspace]
+members = ["src-tauri", "crates/markright-core", "crates/markright-syntax"]
+resolver = "3"

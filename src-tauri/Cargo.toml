@@ -1,0 +1,16 @@
+[package]
+name = "markright-app"
+version = "0.1.0"
+edition = "2024"
+description = "MarkRight - A native Markdown viewer"
+license = "AGPL-3.0-only"
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-build = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+markright-core = { path = "../crates/markright-core" }
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
