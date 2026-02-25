@@ -20,7 +20,9 @@
     "vite-plugin-solid": "^2.11.10"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.10.1"
+    "@tailwindcss/typography": "^0.5.19",
+    "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/plugin-dialog": "^2.6.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

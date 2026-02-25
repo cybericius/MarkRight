@@ -8,22 +8,22 @@
 - [ ] Coding conventions (clippy strict, ESLint+Prettier)
 
 ## Phase 1a: Core Viewer
-- [ ] **Rust**: comrak integration, AST→JSON serialization
-- [ ] **Rust**: Recursive `.md` folder scanning, tree structure building
-- [ ] **Rust**: TOC extraction from AST (heading hierarchy + IDs)
-- [ ] **Tauri commands**: `open_folder`, `get_document`, `get_tree`, `get_toc`
-- [ ] **UI**: Three-panel layout with resizable, collapsible panels
-- [ ] **UI**: File tree with collapsible directories, active file highlight
-- [ ] **UI**: Markdown rendering from AST (all GFM elements)
-- [ ] **UI**: TOC panel with click-to-scroll
-- [ ] **UI**: Scroll tracking (intersection observer → active TOC heading)
-- [ ] **UI**: Internal link navigation within app
-- [ ] **UI**: Syntax-highlighted code blocks
+- [x] **Rust**: comrak integration, AST→JSON serialization
+- [x] **Rust**: Recursive `.md` folder scanning, tree structure building
+- [x] **Rust**: TOC extraction from AST (heading hierarchy + IDs)
+- [x] **Tauri commands**: `open_folder`, `get_document`, `get_tree`, `get_toc`
+- [x] **UI**: Three-panel layout with resizable, collapsible panels
+- [x] **UI**: File tree with collapsible directories, active file highlight
+- [x] **UI**: Markdown rendering from AST (all GFM elements)
+- [x] **UI**: TOC panel with click-to-scroll
+- [x] **UI**: Scroll tracking (intersection observer → active TOC heading)
+- [x] **UI**: Internal link navigation within app
+- [x] **UI**: Syntax-highlighted code blocks
 
 ## Phase 1b: Search & Polish
-- [ ] **Rust**: tantivy full-text index, incremental updates
+- [x] **Rust**: Simple grep-like text search across `.md` files
 - [ ] **Rust**: File watcher (notify), auto-reload on changes
-- [ ] **UI**: Search panel with results, snippets, navigate to match
+- [x] **UI**: Search panel with results, snippets, navigate to match
 - [ ] **UI**: Light/dark theme with system detection
 - [ ] **UI**: Command palette (Ctrl+P) for quick document switch
 - [ ] **UI**: Keyboard shortcuts for panel toggling, tree navigation
