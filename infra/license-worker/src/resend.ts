@@ -13,7 +13,7 @@ export async function sendLicenseEmail(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "MarkRight <license@markright.app>",
+      from: "MarkRight <license@complitask.com>",
       to: [to],
       subject: "Your MarkRight Pro License Key",
       html: licenseEmailHtml(licenseKey),

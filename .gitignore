@@ -25,5 +25,5 @@ Thumbs.db
 # Environment
 .env
 .env.local
-.claude/*
-!.claude/dod.md
+.claude/
+.artifacts/
