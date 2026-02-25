@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --font-ui: system-ui;
   --font-ui-size: 13px;
@@ -24,4 +26,13 @@ body,
   overflow: hidden;
   font-family: var(--font-ui);
   font-size: var(--font-ui-size);
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #111827;
+  color: #e5e7eb;
 }

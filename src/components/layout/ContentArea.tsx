@@ -1,5 +1,6 @@
-import { Component, Show, onCleanup, onMount, createEffect } from "solid-js";
-import { ast, setActiveTocId, findBarOpen, setFindBarOpen } from "../../stores/app";
+import { Component, Show, onCleanup, onMount, createEffect, createMemo } from "solid-js";
+import { ast, setActiveTocId, findBarOpen, setFindBarOpen, zoom, contentWidth } from "../../stores/app";
+import { updateConfig } from "../../stores/actions";
 import MdRenderer from "../markdown/MdRenderer";
 import FindBar from "../search/FindBar";
 
@@ -42,10 +43,30 @@ const ContentArea: Component = () => {
     });
   });
 
+  const widthClass = createMemo(() => {
+    switch (contentWidth()) {
+      case "fit": return "max-w-none";
+      case "a4": return "max-w-[210mm]";
+      default: return "max-w-3xl";
+    }
+  });
+
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.ctrlKey && !e.shiftKey && e.key === "f") {
       e.preventDefault();
       setFindBarOpen(!findBarOpen());
+    }
+    if (e.ctrlKey && (e.key === "=" || e.key === "+")) {
+      e.preventDefault();
+      updateConfig({ zoom: Math.min(300, zoom() + 10) });
+    }
+    if (e.ctrlKey && e.key === "-") {
+      e.preventDefault();
+      updateConfig({ zoom: Math.max(25, zoom() - 10) });
+    }
+    if (e.ctrlKey && e.key === "0") {
+      e.preventDefault();
+      updateConfig({ zoom: 100 });
     }
   };
 
@@ -58,7 +79,7 @@ const ContentArea: Component = () => {
   return (
     <div class="flex min-w-0 flex-1 flex-col">
       <main ref={contentRef} class="min-w-0 flex-1 overflow-y-auto p-8" style={{ "font-family": "var(--font-content)", "font-size": "var(--font-content-size)", "line-height": "var(--font-content-line-height)" }}>
-        <div class="mx-auto max-w-3xl">
+        <div class={`mx-auto ${widthClass()}`} style={{ zoom: `${zoom()}%` }}>
           <Show
             when={ast()}
             fallback={

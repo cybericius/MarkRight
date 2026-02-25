@@ -17,6 +17,8 @@ pub struct AppConfig {
     pub font_family_content: String,
     pub font_size_content: f32,
     pub line_height_content: f32,
+    pub zoom: f32,
+    pub content_width: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -40,6 +42,8 @@ impl Default for AppConfig {
             font_family_content: "serif".to_owned(),
             font_size_content: 16.0,
             line_height_content: 1.6,
+            zoom: 100.0,
+            content_width: "default".to_owned(),
         }
     }
 }

@@ -34,6 +34,8 @@ export const [fontFamilyContent, setFontFamilyContent] = createSignal("serif");
 export const [fontSizeContent, setFontSizeContent] = createSignal(16);
 export const [lineHeightContent, setLineHeightContent] = createSignal(1.6);
 export const [theme, setTheme] = createSignal<"light" | "dark" | "system">("system");
+export const [zoom, setZoom] = createSignal(100);
+export const [contentWidth, setContentWidth] = createSignal<"default" | "fit" | "a4">("default");
 
 // License
 export const [licenseStatus, setLicenseStatus] = createSignal<LicenseStatus>({

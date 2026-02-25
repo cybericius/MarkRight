@@ -25,6 +25,10 @@ import {
   setFontSizeContent,
   setLineHeightContent,
   setTheme,
+  setZoom,
+  setContentWidth,
+  zoom,
+  contentWidth,
   leftPanelWidth,
   rightPanelWidth,
   showLeftPanel,
@@ -90,6 +94,36 @@ export function toggleSearchMode(): void {
   }
 }
 
+let darkMediaQuery: MediaQueryList | null = null;
+let darkMediaHandler: ((e: MediaQueryListEvent) => void) | null = null;
+
+function applyDarkMode(): void {
+  const root = document.documentElement;
+  const t = theme();
+
+  // Clean up previous system listener
+  if (darkMediaQuery && darkMediaHandler) {
+    darkMediaQuery.removeEventListener("change", darkMediaHandler);
+    darkMediaHandler = null;
+  }
+
+  if (t === "dark") {
+    root.classList.add("dark");
+  } else if (t === "light") {
+    root.classList.remove("dark");
+  } else {
+    // system
+    darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = (matches: boolean) => {
+      if (matches) root.classList.add("dark");
+      else root.classList.remove("dark");
+    };
+    apply(darkMediaQuery.matches);
+    darkMediaHandler = (e) => apply(e.matches);
+    darkMediaQuery.addEventListener("change", darkMediaHandler);
+  }
+}
+
 function applyCssVars(): void {
   const root = document.documentElement;
   root.style.setProperty("--font-ui", fontFamilyUi());
@@ -97,6 +131,8 @@ function applyCssVars(): void {
   root.style.setProperty("--font-content", fontFamilyContent());
   root.style.setProperty("--font-content-size", `${fontSizeContent()}px`);
   root.style.setProperty("--font-content-line-height", `${lineHeightContent()}`);
+  root.style.setProperty("--content-zoom", `${zoom() / 100}`);
+  applyDarkMode();
 }
 
 export async function loadConfig(): Promise<void> {
@@ -112,6 +148,8 @@ export async function loadConfig(): Promise<void> {
     setFontSizeContent(cfg.font_size_content);
     setLineHeightContent(cfg.line_height_content);
     setTheme(cfg.theme);
+    setZoom(cfg.zoom);
+    setContentWidth(cfg.content_width);
     applyCssVars();
   } catch {
     // Use defaults — CSS vars already set in global.css
@@ -130,6 +168,8 @@ function currentConfig(): AppConfig {
     font_family_content: fontFamilyContent(),
     font_size_content: fontSizeContent(),
     line_height_content: lineHeightContent(),
+    zoom: zoom(),
+    content_width: contentWidth(),
   };
 }
 
@@ -189,6 +229,8 @@ export function updateConfig(partial: Partial<AppConfig>): void {
   if (partial.font_family_content !== undefined) setFontFamilyContent(partial.font_family_content);
   if (partial.font_size_content !== undefined) setFontSizeContent(partial.font_size_content);
   if (partial.line_height_content !== undefined) setLineHeightContent(partial.line_height_content);
+  if (partial.zoom !== undefined) setZoom(Math.max(25, Math.min(300, partial.zoom)));
+  if (partial.content_width !== undefined) setContentWidth(partial.content_width);
   applyCssVars();
   persistConfig();
 }

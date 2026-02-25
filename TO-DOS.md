@@ -24,7 +24,7 @@
 - [x] **Rust**: Simple grep-like text search across `.md` files
 - [ ] **Rust**: File watcher (notify), auto-reload on changes
 - [x] **UI**: Search panel with results, snippets, navigate to match
-- [ ] **UI**: Light/dark theme with system detection
+- [x] **UI**: Light/dark theme with system detection
 - [ ] **UI**: Command palette (Ctrl+P) for quick document switch
 - [ ] **UI**: Keyboard shortcuts for panel toggling, tree navigation
 - [ ] **UI**: Responsive layout (panels collapse on narrow windows)
