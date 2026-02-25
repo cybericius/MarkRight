@@ -3,7 +3,7 @@
 ## Phase 0: Project Bootstrap
 - [x] Initialize Tauri v2 + SolidJS + Vite project
 - [x] Set up Cargo workspace with `markright-core` crate
-- [ ] CI: GitHub Actions build on Linux/macOS/Windows + Rust tests
+- [x] CI: GitHub Actions build on Linux/macOS/Windows + Rust tests
 - [x] AGPL-3.0 license, project scaffolding
 - [ ] Coding conventions (clippy strict, ESLint+Prettier)
 
