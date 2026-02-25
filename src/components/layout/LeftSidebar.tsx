@@ -1,9 +1,10 @@
 import { Component, Show, onMount, onCleanup } from "solid-js";
 import { open } from "@tauri-apps/plugin-dialog";
-import { openFolder, toggleSearchMode } from "../../stores/actions";
-import { searchMode } from "../../stores/app";
+import { openFolder, toggleSearchMode, promptUpgrade } from "../../stores/actions";
+import { searchMode, setShowSettings, showSettings, isLicensed } from "../../stores/app";
 import FileTree from "../tree/FileTree";
 import SearchPanel from "../search/SearchPanel";
+import ProBadge from "../license/ProBadge";
 
 const LeftSidebar: Component = () => {
   const handleOpenFolder = async () => {
@@ -13,10 +14,22 @@ const LeftSidebar: Component = () => {
     }
   };
 
+  const handleSearchToggle = () => {
+    if (isLicensed()) {
+      toggleSearchMode();
+    } else {
+      promptUpgrade("Cross-File Search");
+    }
+  };
+
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.ctrlKey && e.shiftKey && e.key === "F") {
       e.preventDefault();
-      toggleSearchMode();
+      handleSearchToggle();
+    }
+    if (e.ctrlKey && e.key === ",") {
+      e.preventDefault();
+      setShowSettings(!showSettings());
     }
   };
 
@@ -33,9 +46,9 @@ const LeftSidebar: Component = () => {
         </h2>
         <div class="flex items-center gap-1">
           <button
-            class="rounded px-1.5 py-1 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-            onClick={toggleSearchMode}
-            title="Search (Ctrl+Shift+F)"
+            class="flex items-center gap-1 rounded px-1.5 py-1 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            onClick={handleSearchToggle}
+            title="Cross-File Search (Ctrl+Shift+F)"
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <Show
@@ -57,6 +70,9 @@ const LeftSidebar: Component = () => {
                 />
               </Show>
             </svg>
+            <Show when={!isLicensed()}>
+              <ProBadge />
+            </Show>
           </button>
           <button
             class="rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"

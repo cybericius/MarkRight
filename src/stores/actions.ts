@@ -1,4 +1,5 @@
-import { openFolder as ipcOpenFolder, getDocument, search as ipcSearch } from "../lib/tauri";
+import { openFolder as ipcOpenFolder, getDocument, search as ipcSearch, getConfig, saveConfig, checkLicense } from "../lib/tauri";
+import type { AppConfig } from "../lib/types";
 import {
   setTree,
   setRootFolder,
@@ -11,6 +12,29 @@ import {
   setSearchResults,
   setSearchMode,
   searchMode,
+  setLicenseStatus,
+  setShowUpgradePrompt,
+  setUpgradeFeatureName,
+  setLeftPanelWidth,
+  setRightPanelWidth,
+  setShowLeftPanel,
+  setShowRightPanel,
+  setFontFamilyUi,
+  setFontSizeUi,
+  setFontFamilyContent,
+  setFontSizeContent,
+  setLineHeightContent,
+  setTheme,
+  leftPanelWidth,
+  rightPanelWidth,
+  showLeftPanel,
+  showRightPanel,
+  fontFamilyUi,
+  fontSizeUi,
+  fontFamilyContent,
+  fontSizeContent,
+  lineHeightContent,
+  theme,
 } from "./app";
 
 export async function openFolder(path: string): Promise<void> {
@@ -64,4 +88,85 @@ export function toggleSearchMode(): void {
     setSearchQuery("");
     setSearchResults([]);
   }
+}
+
+function applyCssVars(): void {
+  const root = document.documentElement;
+  root.style.setProperty("--font-ui", fontFamilyUi());
+  root.style.setProperty("--font-ui-size", `${fontSizeUi()}px`);
+  root.style.setProperty("--font-content", fontFamilyContent());
+  root.style.setProperty("--font-content-size", `${fontSizeContent()}px`);
+  root.style.setProperty("--font-content-line-height", `${lineHeightContent()}`);
+}
+
+export async function loadConfig(): Promise<void> {
+  try {
+    const cfg = await getConfig();
+    setLeftPanelWidth(cfg.left_panel_width);
+    setRightPanelWidth(cfg.right_panel_width);
+    setShowLeftPanel(cfg.show_left_panel);
+    setShowRightPanel(cfg.show_right_panel);
+    setFontFamilyUi(cfg.font_family_ui);
+    setFontSizeUi(cfg.font_size_ui);
+    setFontFamilyContent(cfg.font_family_content);
+    setFontSizeContent(cfg.font_size_content);
+    setLineHeightContent(cfg.line_height_content);
+    setTheme(cfg.theme);
+    applyCssVars();
+  } catch {
+    // Use defaults — CSS vars already set in global.css
+  }
+}
+
+function currentConfig(): AppConfig {
+  return {
+    theme: theme(),
+    left_panel_width: leftPanelWidth(),
+    right_panel_width: rightPanelWidth(),
+    show_left_panel: showLeftPanel(),
+    show_right_panel: showRightPanel(),
+    font_family_ui: fontFamilyUi(),
+    font_size_ui: fontSizeUi(),
+    font_family_content: fontFamilyContent(),
+    font_size_content: fontSizeContent(),
+    line_height_content: lineHeightContent(),
+  };
+}
+
+let saveTimer: ReturnType<typeof setTimeout> | null = null;
+
+export function persistConfig(): void {
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveConfig(currentConfig()).catch(() => {});
+  }, 500);
+}
+
+export async function loadLicense(): Promise<void> {
+  try {
+    const status = await checkLicense();
+    setLicenseStatus(status);
+  } catch {
+    // No license or error — stay on free tier
+  }
+}
+
+export function promptUpgrade(featureName: string): void {
+  setUpgradeFeatureName(featureName);
+  setShowUpgradePrompt(true);
+}
+
+export function updateConfig(partial: Partial<AppConfig>): void {
+  if (partial.theme !== undefined) setTheme(partial.theme);
+  if (partial.left_panel_width !== undefined) setLeftPanelWidth(partial.left_panel_width);
+  if (partial.right_panel_width !== undefined) setRightPanelWidth(partial.right_panel_width);
+  if (partial.show_left_panel !== undefined) setShowLeftPanel(partial.show_left_panel);
+  if (partial.show_right_panel !== undefined) setShowRightPanel(partial.show_right_panel);
+  if (partial.font_family_ui !== undefined) setFontFamilyUi(partial.font_family_ui);
+  if (partial.font_size_ui !== undefined) setFontSizeUi(partial.font_size_ui);
+  if (partial.font_family_content !== undefined) setFontFamilyContent(partial.font_family_content);
+  if (partial.font_size_content !== undefined) setFontSizeContent(partial.font_size_content);
+  if (partial.line_height_content !== undefined) setLineHeightContent(partial.line_height_content);
+  applyCssVars();
+  persistConfig();
 }

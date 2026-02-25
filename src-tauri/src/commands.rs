@@ -1,12 +1,14 @@
 use std::path::PathBuf;
 
 use markright_core::ast::{MdNode, serialize_ast};
+use markright_core::config::AppConfig;
 use markright_core::frontmatter::{Frontmatter, strip_frontmatter};
+use markright_core::license::{LicenseStatus, check_license_file};
 use markright_core::search::{SearchResult, search_files};
 use markright_core::toc::{TocEntry, extract_toc_from_ast};
 use markright_core::tree::{TreeNode, build_tree};
 use serde::Serialize;
-use tauri::State;
+use tauri::{AppHandle, Manager, State};
 
 use crate::state::AppState;
 
@@ -83,4 +85,33 @@ pub fn search(query: String, state: State<'_, AppState>) -> Result<Vec<SearchRes
     let root = state.root_folder.lock().unwrap();
     let root = root.as_ref().ok_or("No folder is open")?;
     Ok(search_files(root, &query, 50))
+}
+
+fn config_path(app: &AppHandle) -> Result<PathBuf, String> {
+    let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+    Ok(dir.join("settings.json"))
+}
+
+/// Load the user's persisted configuration.
+#[tauri::command]
+#[allow(clippy::needless_pass_by_value)]
+pub fn get_config(app: AppHandle) -> Result<AppConfig, String> {
+    let path = config_path(&app)?;
+    Ok(AppConfig::load(&path))
+}
+
+/// Save the user's configuration to disk.
+#[tauri::command]
+#[allow(clippy::needless_pass_by_value)]
+pub fn save_config(config: AppConfig, app: AppHandle) -> Result<(), String> {
+    let path = config_path(&app)?;
+    config.save(&path)
+}
+
+/// Check the license file and return its status.
+#[tauri::command]
+#[allow(clippy::needless_pass_by_value)]
+pub fn check_license(app: AppHandle) -> Result<LicenseStatus, String> {
+    let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+    Ok(check_license_file(&dir))
 }

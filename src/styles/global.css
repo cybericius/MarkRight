@@ -1,10 +1,27 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+:root {
+  --font-ui: system-ui;
+  --font-ui-size: 13px;
+  --font-content: serif;
+  --font-content-size: 16px;
+  --font-content-line-height: 1.6;
+}
+
+::highlight(search-match) {
+  background-color: #fef08a;
+}
+::highlight(search-match-current) {
+  background-color: #fb923c;
+}
+
 html,
 body,
 #root {
   height: 100%;
   margin: 0;
   overflow: hidden;
+  font-family: var(--font-ui);
+  font-size: var(--font-ui-size);
 }
