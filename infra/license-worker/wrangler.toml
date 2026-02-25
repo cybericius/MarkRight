@@ -1,0 +1,8 @@
+name = "markright-license"
+main = "src/index.ts"
+compatibility_date = "2025-02-20"
+
+# Secrets (set via `wrangler secret put`):
+#   ED25519_PRIVATE_KEY  — base64 private key from keygen
+#   POLAR_WEBHOOK_SECRET — from Polar.sh webhook config
+#   RESEND_API_KEY       — from Resend dashboard
