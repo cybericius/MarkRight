@@ -16,16 +16,17 @@ Grab the latest release for your platform from [GitHub Releases](https://github.
 ## Features
 
 ### Reading
-- **Directory browsing** — open any folder and navigate its Markdown files in a collapsible file tree
+- **Open any Markdown file** — double-click or "Open With" from your file manager
 - **GFM rendering** — full GitHub Flavored Markdown support (tables, task lists, strikethrough, autolinks)
 - **Syntax highlighting** — code blocks with language-aware highlighting via syntect
 - **Table of contents** — auto-generated from headings with click-to-scroll and scroll tracking
 - **Frontmatter support** — YAML frontmatter parsing and display
-- **Internal link navigation** — click links between Markdown files without leaving the app
-
-### Search
 - **In-file search** — Ctrl+F find with match highlighting, count, and prev/next navigation
+
+### Pro
+- **Directory browsing** — open any folder and navigate its Markdown files in a collapsible file tree *(Pro)*
 - **Cross-file search** — grep-like search across all Markdown files in a directory *(Pro)*
+- **Internal link navigation** — click links between Markdown files without leaving the app *(Pro)*
 
 ### Appearance
 - **Light & dark themes** — manual toggle or follow system preference
@@ -40,7 +41,7 @@ Grab the latest release for your platform from [GitHub Releases](https://github.
 
 ## Pro Features
 
-Cross-file search and future premium extensions are unlocked with a Pro license key. Everything else is free and open source.
+Directory browsing, cross-file search, internal link navigation, and future premium extensions are unlocked with a Pro license key. The free version opens individual Markdown files with full rendering, search, and customization.
 
 Purchase a license to support development and unlock Pro features:
 
