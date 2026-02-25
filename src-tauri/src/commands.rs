@@ -116,6 +116,27 @@ pub fn check_license(app: AppHandle) -> Result<LicenseStatus, String> {
     Ok(check_license_file(&dir))
 }
 
+/// Return the file path passed as a CLI argument on launch, if any.
+/// Returns the file path and its parent directory (for the tree view).
+#[tauri::command]
+#[allow(clippy::needless_pass_by_value)]
+pub fn get_initial_file(state: State<'_, AppState>) -> Option<InitialFile> {
+    let path = state.initial_file.lock().unwrap().take()?;
+    let folder = path.parent().map(std::path::Path::to_path_buf).unwrap_or_default();
+
+    Some(InitialFile {
+        file_path: path.to_string_lossy().into_owned(),
+        folder_path: folder.to_string_lossy().into_owned(),
+    })
+}
+
+/// File path and its parent folder for initial open.
+#[derive(Debug, Serialize)]
+pub struct InitialFile {
+    pub file_path: String,
+    pub folder_path: String,
+}
+
 /// Activate a license by writing the key to the config directory and verifying it.
 #[tauri::command]
 #[allow(clippy::needless_pass_by_value)]

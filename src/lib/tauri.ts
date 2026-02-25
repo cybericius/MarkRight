@@ -29,6 +29,15 @@ export async function saveConfig(config: AppConfig): Promise<void> {
   return invoke<void>("save_config", { config });
 }
 
+export interface InitialFile {
+  file_path: string;
+  folder_path: string;
+}
+
+export async function getInitialFile(): Promise<InitialFile | null> {
+  return invoke<InitialFile | null>("get_initial_file");
+}
+
 export async function checkLicense(): Promise<LicenseStatus> {
   return invoke<LicenseStatus>("check_license");
 }
