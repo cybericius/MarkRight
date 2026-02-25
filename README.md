@@ -50,4 +50,4 @@ pnpm build          # Build frontend only
 
 MarkRight is licensed under [AGPL-3.0-only](LICENSE).
 
-Pro features (cross-file search and future extensions) are unlocked via a donation-based license key. Support the project and get your key at [polar.sh/cybericius](https://polar.sh/cybericius).
+Pro features (cross-file search and future extensions) are unlocked via a donation-based license key. Support the project and get your key at [MarkRight Pro](https://buy.polar.sh/polar_cl_US7q3B0057nkiNtmToO7TegiQc6b6EMUeDD5k1ip2kD).
