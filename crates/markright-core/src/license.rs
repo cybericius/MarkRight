@@ -179,4 +179,26 @@ mod tests {
         assert!(status.valid);
         assert_eq!(status.email.as_deref(), Some("test@example.com"));
     }
+
+    /// End-to-end: sign with production key, verify with production public key.
+    #[test]
+    fn production_token_roundtrip() {
+        let token = sign_token(
+            r#"{"email":"akos@markright.app","issued_at":"2026-02-25T00:00:00Z","tier":"pro"}"#,
+        );
+        let status = verify_license(&token);
+        assert!(status.valid, "Production-signed token must verify");
+        assert_eq!(status.email.as_deref(), Some("akos@markright.app"));
+        assert_eq!(status.tier.as_deref(), Some("pro"));
+    }
+
+    /// Verify an externally-generated token (from keygen sign_token binary).
+    #[test]
+    fn verify_externally_signed_token() {
+        let token = "eyJlbWFpbCI6ImFrb3NAbWFya3JpZ2h0LmFwcCIsImlzc3VlZF9hdCI6IjIwMjYtMDMtMTBUMDA6MDA6MDBaIiwidGllciI6InBybyJ9.PjMB1ji8oPz0/xXk4keTuYWyaPAexHVa7q+ndFGlkpdrK8OAUY9vo/FeBWS2e9k1R8h8aSZ3pSF2VwjWqE1vAQ==";
+        let status = verify_license(token);
+        assert!(status.valid, "Externally signed token must verify");
+        assert_eq!(status.email.as_deref(), Some("akos@markright.app"));
+        assert_eq!(status.tier.as_deref(), Some("pro"));
+    }
 }
