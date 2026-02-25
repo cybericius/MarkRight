@@ -1,4 +1,4 @@
-import { openFolder as ipcOpenFolder, getDocument, search as ipcSearch, getConfig, saveConfig, checkLicense, activateLicense as ipcActivateLicense } from "../lib/tauri";
+import { openFolder as ipcOpenFolder, getDocument, search as ipcSearch, getConfig, saveConfig, checkLicense, activateLicense as ipcActivateLicense, getInitialFile } from "../lib/tauri";
 import type { AppConfig } from "../lib/types";
 import {
   setTree,
@@ -164,6 +164,18 @@ export async function activateLicense(key: string): Promise<boolean> {
 export function promptUpgrade(featureName: string): void {
   setUpgradeFeatureName(featureName);
   setShowUpgradePrompt(true);
+}
+
+export async function handleInitialFile(): Promise<void> {
+  try {
+    const initial = await getInitialFile();
+    if (initial) {
+      await openFolder(initial.folder_path);
+      await openDocument(initial.file_path);
+    }
+  } catch {
+    // No initial file or error — ignore
+  }
 }
 
 export function updateConfig(partial: Partial<AppConfig>): void {
