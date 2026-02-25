@@ -1,3 +1,4 @@
 [workspace]
 members = ["src-tauri", "crates/markright-core", "crates/markright-syntax"]
+exclude = ["infra/keygen"]
 resolver = "3"

@@ -38,12 +38,17 @@
 ## Phase 1b.1: In-File Search & Licensing
 - [x] **Rust**: License module (Ed25519 token verification, `license.rs`)
 - [x] **Tauri**: `check_license` command
+- [x] **Tauri**: `activate_license` command (write key + verify)
 - [x] **UI**: In-file search (Ctrl+F) with CSS Custom Highlight API
 - [x] **UI**: FindBar with match count, prev/next, keyboard navigation
 - [x] **UI**: License status display in StatusBar
 - [x] **UI**: Feature gating — cross-file search requires Pro license
-- [x] **UI**: UpgradePrompt modal for locked features
+- [x] **UI**: UpgradePrompt modal for locked features (with donate link + "I have a key")
 - [x] **UI**: ProBadge component for locked feature indicators
+- [x] **UI**: License activation section in Settings panel
+- [x] **Infra**: Ed25519 keygen utility (`infra/keygen/`)
+- [x] **Infra**: Cloudflare Worker for Polar.sh → license key email (`infra/license-worker/`)
+- [x] **Infra**: Production keypair deployed
 
 ## Phase 1c: Release v1.0
 - [ ] Platform testing (Windows, macOS, Linux)

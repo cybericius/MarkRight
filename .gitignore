@@ -9,6 +9,9 @@ dist/
 # Tauri
 src-tauri/target/
 
+# Infra tools
+infra/keygen/target/
+
 # IDE
 .idea/
 .vscode/

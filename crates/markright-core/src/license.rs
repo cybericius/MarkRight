@@ -4,9 +4,8 @@ use ed25519_dalek::{Signature, VerifyingKey, PUBLIC_KEY_LENGTH, SIGNATURE_LENGTH
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
-/// Dev public key for license verification (Ed25519, 32 bytes, base64-encoded).
-/// Replace with production key before release.
-const PUBLIC_KEY_B64: &str = "2hqvj4VOs9MZb9A0e9RNIkVnnillh8uBMZu18Mzcm9c=";
+/// Production public key for license verification (Ed25519, 32 bytes, base64-encoded).
+const PUBLIC_KEY_B64: &str = "1Q8KGzZ76kk/wKEY5wLlqDt8xnqK4T6d/wG8Zi/nELE=";
 
 /// Result of verifying a license token.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
@@ -94,8 +93,8 @@ mod tests {
     use super::*;
     use ed25519_dalek::{Signer, SigningKey};
 
-    /// Dev secret key (base64). Only used in tests.
-    const SECRET_KEY_B64: &str = "KmhAPU219QuS/5MylPH5PWNBjo91JoAKeEv4fA2iUBc=";
+    /// Test secret key (base64). Must match the production public key above.
+    const SECRET_KEY_B64: &str = "COAAMIwlYVdFHWAvfRTjXyaw+USngZV8rZXefTibf/A=";
 
     fn sign_token(payload_json: &str) -> String {
         let secret_bytes = B64.decode(SECRET_KEY_B64).unwrap();
