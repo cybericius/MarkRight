@@ -32,3 +32,7 @@ export async function saveConfig(config: AppConfig): Promise<void> {
 export async function checkLicense(): Promise<LicenseStatus> {
   return invoke<LicenseStatus>("check_license");
 }
+
+export async function activateLicense(key: string): Promise<LicenseStatus> {
+  return invoke<LicenseStatus>("activate_license", { key });
+}

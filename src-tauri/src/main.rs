@@ -7,6 +7,7 @@ mod state;
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
         .manage(state::AppState::default())
         .invoke_handler(tauri::generate_handler![
             commands::open_folder,
@@ -17,6 +18,7 @@ fn main() {
             commands::get_config,
             commands::save_config,
             commands::check_license,
+            commands::activate_license,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
