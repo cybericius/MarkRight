@@ -41,9 +41,7 @@ Grab the latest release for your platform from [GitHub Releases](https://github.
 
 ## Pro Features
 
-Directory browsing, cross-file search, internal link navigation, and future premium extensions are unlocked with a Pro license key. The free version opens individual Markdown files with full rendering, search, and customization.
-
-Purchase a license to support development and unlock Pro features:
+Pro features (cross-file search and future extensions) are unlocked via a donation-based license key. Support the project and get your key:
 
 [Get MarkRight Pro](https://buy.polar.sh/polar_cl_US7q3B0057nkiNtmToO7TegiQc6b6EMUeDD5k1ip2kD)
 
