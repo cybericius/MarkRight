@@ -25,6 +25,5 @@ Thumbs.db
 # Environment
 .env
 .env.local
-.claude/commands
-.claude/skills
-.claude/secrets.env
+.claude/*
+!.claude/dod.md
