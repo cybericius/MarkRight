@@ -9,6 +9,7 @@ dist/
 # Tauri
 src-tauri/target/
 
+
 # IDE
 .idea/
 .vscode/

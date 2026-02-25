@@ -2,6 +2,7 @@ import { Component } from "solid-js";
 
 const ResizeHandle: Component<{
   onResize: (delta: number) => void;
+  onDragEnd?: () => void;
   side: "left" | "right";
 }> = (props) => {
   let startX = 0;
@@ -23,6 +24,7 @@ const ResizeHandle: Component<{
       document.removeEventListener("mouseup", onMouseUp);
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
+      props.onDragEnd?.();
     };
 
     document.addEventListener("mousemove", onMouseMove);

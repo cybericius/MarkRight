@@ -115,3 +115,14 @@ pub fn check_license(app: AppHandle) -> Result<LicenseStatus, String> {
     let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
     Ok(check_license_file(&dir))
 }
+
+/// Activate a license by writing the key to the config directory and verifying it.
+#[tauri::command]
+#[allow(clippy::needless_pass_by_value)]
+pub fn activate_license(key: String, app: AppHandle) -> Result<LicenseStatus, String> {
+    let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    let path = dir.join("license.key");
+    std::fs::write(&path, key.trim()).map_err(|e| e.to_string())?;
+    Ok(check_license_file(&dir))
+}

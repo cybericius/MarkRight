@@ -1,7 +1,17 @@
 import { Component } from "solid-js";
-import { upgradeFeatureName, setShowUpgradePrompt } from "../../stores/app";
+import { upgradeFeatureName, setShowUpgradePrompt, setShowSettings } from "../../stores/app";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 const UpgradePrompt: Component = () => {
+  const handleDonate = () => {
+    openUrl("https://polar.sh/cybericius");
+  };
+
+  const handleHaveKey = () => {
+    setShowUpgradePrompt(false);
+    setShowSettings(true);
+  };
+
   return (
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div class="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-900">
@@ -16,17 +26,24 @@ const UpgradePrompt: Component = () => {
           <ol class="list-inside list-decimal space-y-1">
             <li>
               Donate at{" "}
-              <span class="font-medium text-blue-600 dark:text-blue-400">markright.app/donate</span>
+              <button
+                onClick={handleDonate}
+                class="font-medium text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                polar.sh/cybericius
+              </button>
             </li>
             <li>You'll receive a license key by email</li>
-            <li>
-              Save it as{" "}
-              <code class="rounded bg-gray-200 px-1 text-xs dark:bg-gray-700">license.key</code>{" "}
-              in MarkRight's config folder
-            </li>
+            <li>Paste it in Settings to activate</li>
           </ol>
         </div>
-        <div class="flex justify-end">
+        <div class="flex justify-end gap-2">
+          <button
+            class="rounded-md px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-gray-800"
+            onClick={handleHaveKey}
+          >
+            I have a key
+          </button>
           <button
             class="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             onClick={() => setShowUpgradePrompt(false)}

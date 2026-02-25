@@ -1,4 +1,4 @@
-import { openFolder as ipcOpenFolder, getDocument, search as ipcSearch, getConfig, saveConfig, checkLicense } from "../lib/tauri";
+import { openFolder as ipcOpenFolder, getDocument, search as ipcSearch, getConfig, saveConfig, checkLicense, activateLicense as ipcActivateLicense } from "../lib/tauri";
 import type { AppConfig } from "../lib/types";
 import {
   setTree,
@@ -148,6 +148,16 @@ export async function loadLicense(): Promise<void> {
     setLicenseStatus(status);
   } catch {
     // No license or error — stay on free tier
+  }
+}
+
+export async function activateLicense(key: string): Promise<boolean> {
+  try {
+    const status = await ipcActivateLicense(key);
+    setLicenseStatus(status);
+    return status.valid;
+  } catch {
+    return false;
   }
 }
 
