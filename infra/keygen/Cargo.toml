@@ -1,0 +1,10 @@
+[package]
+name = "markright-keygen"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+base64 = "0.22"
+ed25519-dalek = { version = "2", features = ["std", "rand_core"] }
+rand = "0.8"
