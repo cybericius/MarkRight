@@ -59,3 +59,24 @@ export interface SearchMatch {
   col_start: number;
   col_end: number;
 }
+
+/** License verification status from Rust backend. */
+export interface LicenseStatus {
+  valid: boolean;
+  email: string | null;
+  tier: string | null;
+}
+
+/** Persisted application configuration. */
+export interface AppConfig {
+  theme: "light" | "dark" | "system";
+  left_panel_width: number;
+  right_panel_width: number;
+  show_left_panel: boolean;
+  show_right_panel: boolean;
+  font_family_ui: string;
+  font_size_ui: number;
+  font_family_content: string;
+  font_size_content: number;
+  line_height_content: number;
+}

@@ -4,6 +4,8 @@ import ContentArea from "./ContentArea";
 import RightSidebar from "./RightSidebar";
 import StatusBar from "./StatusBar";
 import ResizeHandle from "./ResizeHandle";
+import SettingsPanel from "../settings/SettingsPanel";
+import UpgradePrompt from "../license/UpgradePrompt";
 import {
   leftPanelWidth,
   setLeftPanelWidth,
@@ -11,7 +13,10 @@ import {
   setRightPanelWidth,
   showLeftPanel,
   showRightPanel,
+  showSettings,
+  showUpgradePrompt,
 } from "../../stores/app";
+import { persistConfig } from "../../stores/actions";
 
 const MIN_PANEL_WIDTH = 120;
 const MAX_PANEL_WIDTH = 600;
@@ -36,6 +41,7 @@ const ThreePanel: Component = () => {
             onResize={(delta) =>
               setLeftPanelWidth(clampWidth(leftPanelWidth() + delta))
             }
+            onDragEnd={persistConfig}
           />
         </Show>
         <ContentArea />
@@ -45,6 +51,7 @@ const ThreePanel: Component = () => {
             onResize={(delta) =>
               setRightPanelWidth(clampWidth(rightPanelWidth() + delta))
             }
+            onDragEnd={persistConfig}
           />
           <div
             class="shrink-0"
@@ -55,6 +62,12 @@ const ThreePanel: Component = () => {
         </Show>
       </div>
       <StatusBar />
+      <Show when={showSettings()}>
+        <SettingsPanel />
+      </Show>
+      <Show when={showUpgradePrompt()}>
+        <UpgradePrompt />
+      </Show>
     </div>
   );
 };

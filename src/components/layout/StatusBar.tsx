@@ -2,10 +2,12 @@ import { Component, Show } from "solid-js";
 import {
   currentPath,
   showLeftPanel,
-  setShowLeftPanel,
   showRightPanel,
-  setShowRightPanel,
+  setShowSettings,
+  isLicensed,
+  licenseStatus,
 } from "../../stores/app";
+import { updateConfig } from "../../stores/actions";
 
 const StatusBar: Component = () => {
   return (
@@ -13,7 +15,7 @@ const StatusBar: Component = () => {
       <div class="flex items-center gap-2">
         <button
           class={`rounded px-1 hover:text-gray-700 dark:hover:text-gray-200 ${showLeftPanel() ? "text-blue-500" : ""}`}
-          onClick={() => setShowLeftPanel(!showLeftPanel())}
+          onClick={() => updateConfig({ show_left_panel: !showLeftPanel() })}
           title="Toggle file panel"
         >
           ⊟
@@ -22,13 +24,27 @@ const StatusBar: Component = () => {
           <span class="truncate">{currentPath()}</span>
         </Show>
       </div>
-      <button
-        class={`rounded px-1 hover:text-gray-700 dark:hover:text-gray-200 ${showRightPanel() ? "text-blue-500" : ""}`}
-        onClick={() => setShowRightPanel(!showRightPanel())}
-        title="Toggle TOC panel"
-      >
-        ⊟
-      </button>
+      <div class="flex items-center gap-2">
+        <Show when={isLicensed()}>
+          <span class="text-green-600 dark:text-green-400">
+            Registered to {licenseStatus().email}
+          </span>
+        </Show>
+        <button
+          class="rounded px-1 hover:text-gray-700 dark:hover:text-gray-200"
+          onClick={() => setShowSettings(true)}
+          title="Settings (Ctrl+,)"
+        >
+          ⚙
+        </button>
+        <button
+          class={`rounded px-1 hover:text-gray-700 dark:hover:text-gray-200 ${showRightPanel() ? "text-blue-500" : ""}`}
+          onClick={() => updateConfig({ show_right_panel: !showRightPanel() })}
+          title="Toggle TOC panel"
+        >
+          ⊟
+        </button>
+      </div>
     </footer>
   );
 };
