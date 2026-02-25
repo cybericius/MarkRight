@@ -27,3 +27,4 @@ Thumbs.db
 .env.local
 .claude/commands
 .claude/skills
+.claude/secrets.env
