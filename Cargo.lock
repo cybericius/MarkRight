@@ -2071,7 +2071,7 @@ checksum = "c41e0c4fef86961ac6d6f8a82609f55f31b05e4fce149ac5710e439df7619ba4"
 
 [[package]]
 name = "markright-app"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "markright-core",
  "serde",
@@ -2084,7 +2084,7 @@ dependencies = [
 
 [[package]]
 name = "markright-core"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "base64 0.22.1",
  "comrak",
@@ -2097,7 +2097,7 @@ dependencies = [
 
 [[package]]
 name = "markright-syntax"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "syntect",
 ]
