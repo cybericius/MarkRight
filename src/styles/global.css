@@ -7,7 +7,7 @@
   --font-ui: system-ui;
   --font-ui-size: 13px;
   --font-content: serif;
-  --font-content-size: 16px;
+  --font-content-size: 18px;
   --font-content-line-height: 1.6;
 }
 
@@ -26,6 +26,18 @@ body,
   overflow: hidden;
   font-family: var(--font-ui);
   font-size: var(--font-ui-size);
+}
+
+
+/* Light mode: override syntect dark theme on highlighted code blocks */
+html:not(.dark) .code-block pre[style] {
+  background-color: #f3f4f6 !important;
+}
+html:not(.dark) .code-block pre[style] code span[style] {
+  color: inherit !important;
+}
+html:not(.dark) .code-block pre[style] code {
+  color: #1f2937;
 }
 
 html.dark {

@@ -13,7 +13,7 @@ const MdRenderer: Component<{ node: MdNode }> = (props) => {
   return (
     <Switch fallback={children()}>
       <Match when={props.node.type === "Document"}>
-        <div class="prose prose-gray max-w-none dark:prose-invert">{children()}</div>
+        <div class="prose prose-gray max-w-none dark:prose-invert" style={{ "font-family": "var(--font-content)", "font-size": "var(--font-content-size)", "line-height": "var(--font-content-line-height)" }}>{children()}</div>
       </Match>
 
       <Match when={props.node.type === "Heading" && props.node.level === 1}>
