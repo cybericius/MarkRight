@@ -84,7 +84,7 @@ const ContentArea: Component = () => {
 
   return (
     <div class="flex min-w-0 flex-1 flex-col">
-      <main ref={contentRef} class="min-w-0 flex-1 overflow-y-auto p-8" style={{ "font-family": "var(--font-content)", "font-size": "var(--font-content-size)", "line-height": "var(--font-content-line-height)" }}>
+      <main ref={contentRef} class="min-w-0 flex-1 overflow-y-auto p-8">
         <div class={`mx-auto ${widthClass()}`} style={{ zoom: `${zoom()}%` }}>
           <Show
             when={ast()}
