@@ -15,6 +15,30 @@ Native, lightweight, directory-first Markdown viewer built with Tauri v2 + Solid
 - `cargo test` — Run all Rust tests
 - `cargo clippy` — Run lints (pedantic enabled via `.cargo/config.toml`)
 
+## Model Selection
+
+Use the cheapest model that can handle the task. Switch with `/model <name>`.
+
+| Model | Use for |
+|---|---|
+| **haiku** | Test runs, shell commands, file search/grep, simple edits, git ops, Docker, infra |
+| **sonnet** | Regular coding, features, bug fixes, code review, refactoring, docs |
+| **opus** | Complex planning, architecture, multi-file design, difficult debugging, security review |
+
+### Subagent Rules (MANDATORY)
+
+- **Always** set `model: "haiku"` for Explore, Bash, and simple subagents
+- **Only** use sonnet/opus for subagents doing complex reasoning
+- Slash commands (`/flush`, `/commit`, `/ship`) use haiku-level operations
+
+### When NOT to Use Opus
+
+- Simple file searches or greps
+- Running tests or build commands
+- Single-file edits with clear requirements
+- Git operations, Docker commands
+- Reading/summarizing files
+
 ## Conventions
 - Rust edition 2024, clippy pedantic
 - Frontend: TypeScript strict, SolidJS components in `src/components/`
