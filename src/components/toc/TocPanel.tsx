@@ -25,7 +25,7 @@ const TocPanel: Component = () => {
                 <button
                   class={`block w-full rounded px-2 py-0.5 text-left text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 ${
                     activeTocId() === entry.id
-                      ? "bg-blue-50 font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
                       : "text-gray-600 dark:text-gray-400"
                   }`}
                   style={{ "padding-left": `${(entry.level - 1) * 12 + 8}px` }}
