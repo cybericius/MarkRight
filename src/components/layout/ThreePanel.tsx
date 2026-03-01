@@ -15,6 +15,7 @@ import {
   showRightPanel,
   showSettings,
   showUpgradePrompt,
+  isFullscreen,
 } from "../../stores/app";
 import { persistConfig } from "../../stores/actions";
 
@@ -27,7 +28,12 @@ function clampWidth(width: number): number {
 
 const ThreePanel: Component = () => {
   return (
-    <div class="flex h-screen flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <div class="relative flex h-screen flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+      <Show when={isFullscreen()}>
+        <div class="pointer-events-none absolute top-3 left-3 z-50 opacity-40 transition-opacity hover:opacity-80">
+          <img src="/icon-32.png" alt="MarkRight" width="24" height="24" draggable={false} />
+        </div>
+      </Show>
       <div class="flex min-h-0 flex-1">
         <Show when={showLeftPanel()}>
           <div
