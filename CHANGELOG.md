@@ -2,6 +2,11 @@
 
 All notable changes to MarkRight are documented in this file.
 
+## [0.2.4] — 2026-03-01
+
+### Fixed
+- F11 fullscreen not working — added missing Tauri v2 window permissions
+
 ## [0.2.3] — 2026-03-01
 
 ### Fixed
