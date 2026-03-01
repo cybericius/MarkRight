@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/nicoverbruggen/tauri-v2-schema/main/src/schema.json",
   "productName": "MarkRight",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "identifier": "com.markright.app",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -41,6 +41,14 @@
         "mimeType": "text/markdown",
         "description": "Markdown Document"
       }
-    ]
+    ],
+    "linux": {
+      "deb": {
+        "desktopTemplate": "desktop-template.desktop"
+      },
+      "rpm": {
+        "desktopTemplate": "desktop-template.desktop"
+      }
+    }
   }
 }

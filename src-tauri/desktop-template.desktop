@@ -1,0 +1,10 @@
+[Desktop Entry]
+Categories=Office;Viewer;TextEditor;
+Comment={{{comment}}}
+Exec={{{exec}}} %f
+Icon={{{icon}}}
+Name={{{name}}}
+StartupWMClass={{{exec}}}
+Terminal=false
+Type=Application
+MimeType=text/markdown;text/x-markdown;
