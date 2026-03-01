@@ -55,3 +55,6 @@ export const [findCurrentIndex, setFindCurrentIndex] = createSignal(0);
 
 // Settings panel visibility
 export const [showSettings, setShowSettings] = createSignal(false);
+
+// Fullscreen state
+export const [isFullscreen, setIsFullscreen] = createSignal(false);

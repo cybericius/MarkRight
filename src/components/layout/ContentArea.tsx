@@ -1,5 +1,5 @@
 import { Component, Show, onCleanup, onMount, createEffect, createMemo } from "solid-js";
-import { ast, setActiveTocId, findBarOpen, setFindBarOpen, zoom, contentWidth } from "../../stores/app";
+import { ast, setActiveTocId, findBarOpen, setFindBarOpen, zoom, contentWidth, setIsFullscreen } from "../../stores/app";
 import { updateConfig } from "../../stores/actions";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import MdRenderer from "../markdown/MdRenderer";
@@ -72,7 +72,10 @@ const ContentArea: Component = () => {
     if (e.key === "F11") {
       e.preventDefault();
       const win = getCurrentWindow();
-      win.isFullscreen().then((fs) => win.setFullscreen(!fs));
+      win.isFullscreen().then((fs) => {
+        win.setFullscreen(!fs);
+        setIsFullscreen(!fs);
+      });
     }
   };
 
