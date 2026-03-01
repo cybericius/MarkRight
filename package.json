@@ -1,7 +1,7 @@
 {
   "name": "markright",
   "private": true,
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A native, lightweight, directory-first Markdown viewer",
   "scripts": {
     "dev": "vite",
