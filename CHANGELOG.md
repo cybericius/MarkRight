@@ -2,6 +2,13 @@
 
 All notable changes to MarkRight are documented in this file.
 
+## [0.2.3] — 2026-03-01
+
+### Fixed
+- App not appearing in "Open With" file association dialogs (missing `%f` in .desktop Exec line)
+- Dynamic version in StatusBar — now auto-reads from package.json at build time
+- Added `Categories` and `text/x-markdown` MIME type to .desktop file
+
 ## [0.2.2] — 2026-03-01
 
 ### Added
