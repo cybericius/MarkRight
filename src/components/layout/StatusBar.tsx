@@ -22,7 +22,7 @@ const StatusBar: Component = () => {
         >
           ⊟
         </button>
-        <Show when={currentPath()} fallback={<span>MarkRight v0.1.0</span>}>
+        <Show when={currentPath()} fallback={<span>MarkRight v{__APP_VERSION__}</span>}>
           <span class="truncate">{currentPath()}</span>
         </Show>
       </div>
