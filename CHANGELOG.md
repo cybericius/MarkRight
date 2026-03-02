@@ -2,6 +2,22 @@
 
 All notable changes to MarkRight are documented in this file.
 
+## [Unreleased]
+
+## [0.2.5] — 2026-03-02
+
+### Added
+- Selectable code syntax themes — choose between Ocean (default) and Sulphurpool in Settings > View (Pro)
+- Sulphurpool dark & light themes (Atelier base16 palette by Bram de Haan)
+- Proper light-mode syntax highlighting using dedicated light themes (replaces CSS color stripping)
+- `code_theme` persisted in user config
+
+### Fixed
+- Light theme contrast — bumped too-faint grays (`text-gray-400` → `text-gray-500`) across 7 components
+- StatusBar separator nearly invisible in light mode (`text-gray-300` → `text-gray-400`)
+- Settings section headers too light in light mode
+- Code blocks had no syntax coloring in light mode (dark theme colors were stripped by CSS hack)
+
 ## [0.2.4] — 2026-03-01
 
 ### Fixed
