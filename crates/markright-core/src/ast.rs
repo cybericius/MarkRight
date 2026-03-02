@@ -28,6 +28,8 @@ pub struct MdNode {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub highlighted_html: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub highlighted_html_light: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub list_type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub start: Option<usize>,
@@ -53,6 +55,7 @@ impl MdNode {
             title: None,
             info: None,
             highlighted_html: None,
+            highlighted_html_light: None,
             list_type: None,
             start: None,
             tight: None,
@@ -102,6 +105,11 @@ fn slugify(text: &str) -> String {
 
 /// Parse Markdown and return a serializable AST.
 pub fn serialize_ast(input: &str) -> MdNode {
+    serialize_ast_themed(input, "ocean")
+}
+
+/// Parse Markdown and return a serializable AST with a specific code theme.
+pub fn serialize_ast_themed(input: &str, code_theme: &str) -> MdNode {
     let arena = Arena::new();
     let mut options = Options::default();
     options.extension.table = true;
@@ -113,13 +121,14 @@ pub fn serialize_ast(input: &str) -> MdNode {
     let root = parse_document(&arena, input, &options);
     let mut id_counts: HashMap<String, usize> = HashMap::new();
 
-    convert_node(root, &mut id_counts)
+    convert_node(root, &mut id_counts, code_theme)
 }
 
 #[allow(clippy::too_many_lines)]
 fn convert_node<'a>(
     node: &'a comrak::arena_tree::Node<'a, std::cell::RefCell<Ast>>,
     id_counts: &mut HashMap<String, usize>,
+    code_theme: &str,
 ) -> MdNode {
     let data = node.data.borrow();
     let mut md_node = match &data.value {
@@ -143,7 +152,7 @@ fn convert_node<'a>(
             n.id = Some(id);
             n.children = node
                 .children()
-                .map(|c| convert_node(c, id_counts))
+                .map(|c| convert_node(c, id_counts, code_theme))
                 .collect();
             return n;
         }
@@ -168,8 +177,9 @@ fn convert_node<'a>(
             let lang = cb.info.split_whitespace().next().unwrap_or("").to_string();
             if !lang.is_empty() {
                 n.info = Some(lang.clone());
-                if let Ok(html) = markright_syntax::highlight(&cb.literal, &lang) {
-                    n.highlighted_html = Some(html);
+                if let Ok((dark, light)) = markright_syntax::highlight_pair(&cb.literal, &lang, code_theme) {
+                    n.highlighted_html = Some(dark);
+                    n.highlighted_html_light = Some(light);
                 }
             }
             n
@@ -251,7 +261,7 @@ fn convert_node<'a>(
 
     md_node.children = node
         .children()
-        .map(|c| convert_node(c, id_counts))
+        .map(|c| convert_node(c, id_counts, code_theme))
         .collect();
 
     md_node

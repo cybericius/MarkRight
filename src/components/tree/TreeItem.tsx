@@ -26,7 +26,7 @@ const TreeItem: Component<{ node: TreeNode }> = (props) => {
         }`}
         onClick={handleClick}
       >
-        <span class="shrink-0 text-xs text-gray-400">
+        <span class="shrink-0 text-xs text-gray-500 dark:text-gray-400">
           {props.node.is_dir ? (expanded() ? "▾" : "▸") : "·"}
         </span>
         <span class="truncate">{props.node.name}</span>

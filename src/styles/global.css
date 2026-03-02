@@ -29,17 +29,6 @@ body,
 }
 
 
-/* Light mode: override syntect dark theme on highlighted code blocks */
-html:not(.dark) .code-block pre[style] {
-  background-color: #f3f4f6 !important;
-}
-html:not(.dark) .code-block pre[style] code span[style] {
-  color: inherit !important;
-}
-html:not(.dark) .code-block pre[style] code {
-  color: #1f2937;
-}
-
 html.dark {
   color-scheme: dark;
 }

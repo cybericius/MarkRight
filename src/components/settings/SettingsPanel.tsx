@@ -16,8 +16,10 @@ import {
   zoom,
   contentWidth,
   licenseStatus,
+  codeTheme,
+  isLicensed,
 } from "../../stores/app";
-import { updateConfig, activateLicense } from "../../stores/actions";
+import { updateConfig, activateLicense, promptUpgrade } from "../../stores/actions";
 
 const SettingsPanel: Component = () => {
   const onKeyDown = (e: KeyboardEvent) => {
@@ -38,7 +40,7 @@ const SettingsPanel: Component = () => {
         <div class="mb-6 flex items-center justify-between">
           <h2 class="text-lg font-semibold">Settings</h2>
           <button
-            class="rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            class="rounded p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             onClick={() => setShowSettings(false)}
           >
             ✕
@@ -71,6 +73,35 @@ const SettingsPanel: Component = () => {
                   {w === "default" ? "Default" : w === "fit" ? "Fit Width" : "A4"}
                 </label>
               ))}
+            </div>
+          </Row>
+          <Row label="Code Theme">
+            <div class="flex gap-3">
+              {([
+                ["ocean", "Ocean"],
+                ["sulphurpool", "Sulphurpool"],
+              ] as const).map(([value, label]) => {
+                const isPro = value !== "ocean";
+                return (
+                  <label class={`flex cursor-pointer items-center gap-1.5 text-sm ${isPro && !isLicensed() ? "opacity-60" : ""}`}>
+                    <input
+                      type="radio"
+                      name="code-theme"
+                      checked={codeTheme() === value}
+                      onChange={() => {
+                        if (isPro && !isLicensed()) {
+                          promptUpgrade("Code Themes");
+                        } else {
+                          updateConfig({ code_theme: value });
+                        }
+                      }}
+                      class="accent-blue-500"
+                    />
+                    {label}
+                    {isPro && !isLicensed() && <span class="text-xs text-amber-600 dark:text-amber-400">Pro</span>}
+                  </label>
+                );
+              })}
             </div>
           </Row>
         </Section>
@@ -282,7 +313,7 @@ const LicenseSection: Component = () => {
 
 const Section: Component<{ title: string; children: any }> = (props) => (
   <div class="mb-5">
-    <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+    <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
       {props.title}
     </h3>
     <div class="space-y-2">{props.children}</div>
