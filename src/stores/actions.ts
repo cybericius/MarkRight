@@ -12,6 +12,7 @@ import {
   setSearchResults,
   setSearchMode,
   searchMode,
+  currentPath,
   setLicenseStatus,
   setShowUpgradePrompt,
   setUpgradeFeatureName,
@@ -27,8 +28,10 @@ import {
   setTheme,
   setZoom,
   setContentWidth,
+  setCodeTheme,
   zoom,
   contentWidth,
+  codeTheme,
   leftPanelWidth,
   rightPanelWidth,
   showLeftPanel,
@@ -54,7 +57,7 @@ export async function openFolder(path: string): Promise<void> {
 }
 
 export async function openDocument(path: string): Promise<void> {
-  const doc = await getDocument(path);
+  const doc = await getDocument(path, codeTheme());
   setCurrentPath(path);
   setAst(doc.ast);
   setToc(doc.toc);
@@ -150,6 +153,7 @@ export async function loadConfig(): Promise<void> {
     setTheme(cfg.theme);
     setZoom(cfg.zoom);
     setContentWidth(cfg.content_width);
+    if (cfg.code_theme) setCodeTheme(cfg.code_theme);
     applyCssVars();
   } catch {
     // Use defaults — CSS vars already set in global.css
@@ -170,6 +174,7 @@ function currentConfig(): AppConfig {
     line_height_content: lineHeightContent(),
     zoom: zoom(),
     content_width: contentWidth(),
+    code_theme: codeTheme(),
   };
 }
 
@@ -231,6 +236,12 @@ export function updateConfig(partial: Partial<AppConfig>): void {
   if (partial.line_height_content !== undefined) setLineHeightContent(partial.line_height_content);
   if (partial.zoom !== undefined) setZoom(Math.max(25, Math.min(300, partial.zoom)));
   if (partial.content_width !== undefined) setContentWidth(partial.content_width);
+  if (partial.code_theme !== undefined) {
+    setCodeTheme(partial.code_theme);
+    // Re-parse current document with new code theme
+    const path = currentPath();
+    if (path) openDocument(path);
+  }
   applyCssVars();
   persistConfig();
 }

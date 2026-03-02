@@ -48,7 +48,7 @@ const StatusBar: Component = () => {
         >
           +
         </button>
-        <span class="mx-1 text-gray-300 dark:text-gray-600">|</span>
+        <span class="mx-1 text-gray-400 dark:text-gray-600">|</span>
         <button
           class="rounded px-1 hover:text-gray-700 dark:hover:text-gray-200"
           onClick={() => {

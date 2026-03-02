@@ -7,7 +7,7 @@ const FileTree: Component = () => {
     <Show
       when={tree().length > 0}
       fallback={
-        <p class="text-sm text-gray-400 dark:text-gray-500">
+        <p class="text-sm text-gray-500">
           Open a folder to browse markdown files.
         </p>
       }

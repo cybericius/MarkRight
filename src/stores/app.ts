@@ -1,4 +1,4 @@
-import { createSignal, createMemo } from "solid-js";
+import { createSignal, createMemo, createEffect } from "solid-js";
 import type {
   TreeNode,
   MdNode,
@@ -36,6 +36,7 @@ export const [lineHeightContent, setLineHeightContent] = createSignal(1.6);
 export const [theme, setTheme] = createSignal<"light" | "dark" | "system">("system");
 export const [zoom, setZoom] = createSignal(100);
 export const [contentWidth, setContentWidth] = createSignal<"default" | "fit" | "a4">("default");
+export const [codeTheme, setCodeTheme] = createSignal("ocean");
 
 // License
 export const [licenseStatus, setLicenseStatus] = createSignal<LicenseStatus>({
@@ -58,3 +59,18 @@ export const [showSettings, setShowSettings] = createSignal(false);
 
 // Fullscreen state
 export const [isFullscreen, setIsFullscreen] = createSignal(false);
+
+// Derived dark mode signal — tracks whether dark class is active on <html>
+const [darkActive, setDarkActive] = createSignal(
+  typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
+);
+// Re-check whenever theme signal changes (applyTheme toggles the class)
+createEffect(() => {
+  // subscribe to theme changes
+  theme();
+  // defer to next microtask so applyTheme has run
+  queueMicrotask(() => {
+    setDarkActive(document.documentElement.classList.contains("dark"));
+  });
+});
+export { darkActive as isDark };

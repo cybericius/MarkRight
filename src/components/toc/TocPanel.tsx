@@ -12,7 +12,7 @@ const TocPanel: Component = () => {
     <Show
       when={toc().length > 0}
       fallback={
-        <p class="text-sm text-gray-400 dark:text-gray-500">
+        <p class="text-sm text-gray-500">
           No headings found.
         </p>
       }

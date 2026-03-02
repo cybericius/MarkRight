@@ -41,7 +41,7 @@ const SearchPanel: Component = () => {
     <div class="flex h-full flex-col">
       <div class="relative px-2 pb-2">
         <svg
-          class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+          class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -64,7 +64,7 @@ const SearchPanel: Component = () => {
         />
         <Show when={searchQuery()}>
           <button
-            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
             onClick={handleClear}
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@ const SearchPanel: Component = () => {
         <Show
           when={searchQuery().trim()}
           fallback={
-            <p class="text-sm text-gray-400 dark:text-gray-500">
+            <p class="text-sm text-gray-500">
               Type to search across all files.
             </p>
           }
@@ -91,7 +91,7 @@ const SearchPanel: Component = () => {
           <Show
             when={searchResults().length > 0}
             fallback={
-              <p class="text-sm text-gray-400 dark:text-gray-500">No matches found.</p>
+              <p class="text-sm text-gray-500">No matches found.</p>
             }
           >
             <ul class="space-y-3">
@@ -114,7 +114,7 @@ const SearchPanel: Component = () => {
                               class="flex w-full items-start gap-2 rounded px-1 py-0.5 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
                               onClick={() => handleResultClick(result.path)}
                             >
-                              <span class="shrink-0 text-xs tabular-nums text-gray-400">
+                              <span class="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">
                                 {match.line_number}
                               </span>
                               <span class="min-w-0 truncate">

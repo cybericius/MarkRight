@@ -112,7 +112,7 @@ const FindBar: Component<FindBarProps> = (props) => {
       class="flex items-center gap-2 border-t border-gray-200 bg-gray-50 px-4 py-1.5 dark:border-gray-800 dark:bg-gray-900"
       style={{ display: findBarOpen() ? "flex" : "none" }}
     >
-      <svg class="h-4 w-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"

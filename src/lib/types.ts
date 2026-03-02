@@ -9,6 +9,7 @@ export interface MdNode {
   title?: string;
   info?: string;
   highlighted_html?: string;
+  highlighted_html_light?: string;
   list_type?: string;
   start?: number;
   tight?: boolean;
@@ -81,4 +82,5 @@ export interface AppConfig {
   line_height_content: number;
   zoom: number;
   content_width: "default" | "fit" | "a4";
+  code_theme: string;
 }

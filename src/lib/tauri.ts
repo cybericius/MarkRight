@@ -9,8 +9,8 @@ export async function getTree(): Promise<TreeNode[]> {
   return invoke<TreeNode[]>("get_tree");
 }
 
-export async function getDocument(path: string): Promise<DocumentResponse> {
-  return invoke<DocumentResponse>("get_document", { path });
+export async function getDocument(path: string, codeTheme?: string): Promise<DocumentResponse> {
+  return invoke<DocumentResponse>("get_document", { path, codeTheme });
 }
 
 export async function getToc(path: string): Promise<TocEntry[]> {
