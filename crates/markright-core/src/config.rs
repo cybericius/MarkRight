@@ -19,6 +19,7 @@ pub struct AppConfig {
     pub line_height_content: f32,
     pub zoom: f32,
     pub content_width: String,
+    pub code_theme: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -44,6 +45,7 @@ impl Default for AppConfig {
             line_height_content: 1.6,
             zoom: 100.0,
             content_width: "default".to_owned(),
+            code_theme: "ocean".to_owned(),
         }
     }
 }
