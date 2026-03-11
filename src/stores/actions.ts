@@ -29,6 +29,7 @@ import {
   setZoom,
   setContentWidth,
   setCodeTheme,
+  setDarkActive,
   zoom,
   contentWidth,
   codeTheme,
@@ -120,11 +121,14 @@ function applyDarkMode(): void {
     const apply = (matches: boolean) => {
       if (matches) root.classList.add("dark");
       else root.classList.remove("dark");
+      setDarkActive(matches);
     };
     apply(darkMediaQuery.matches);
     darkMediaHandler = (e) => apply(e.matches);
     darkMediaQuery.addEventListener("change", darkMediaHandler);
   }
+  // Synchronously update isDark signal to match the class state
+  setDarkActive(root.classList.contains("dark"));
 }
 
 function applyCssVars(): void {
