@@ -4,6 +4,13 @@ All notable changes to MarkRight are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.6] — 2026-03-11
+
+### Fixed
+- Code blocks had white background on first load when system theme is dark (race condition in isDark signal)
+- Code block font size now scales proportionally with content font (was fixed at 14px)
+- Default body font changed from serif to IBM Plex Sans for cleaner reading
+
 ## [0.2.5] — 2026-03-02
 
 ### Added
