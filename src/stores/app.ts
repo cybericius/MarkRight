@@ -30,7 +30,7 @@ export const [showRightPanel, setShowRightPanel] = createSignal(true);
 // Font / config
 export const [fontFamilyUi, setFontFamilyUi] = createSignal("system-ui");
 export const [fontSizeUi, setFontSizeUi] = createSignal(13);
-export const [fontFamilyContent, setFontFamilyContent] = createSignal("serif");
+export const [fontFamilyContent, setFontFamilyContent] = createSignal("IBM Plex Sans, sans-serif");
 export const [fontSizeContent, setFontSizeContent] = createSignal(18);
 export const [lineHeightContent, setLineHeightContent] = createSignal(1.6);
 export const [theme, setTheme] = createSignal<"light" | "dark" | "system">("system");

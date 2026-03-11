@@ -40,7 +40,7 @@ impl Default for AppConfig {
             show_right_panel: true,
             font_family_ui: "system-ui".to_owned(),
             font_size_ui: 13.0,
-            font_family_content: "serif".to_owned(),
+            font_family_content: "IBM Plex Sans, sans-serif".to_owned(),
             font_size_content: 18.0,
             line_height_content: 1.6,
             zoom: 100.0,
@@ -82,7 +82,7 @@ mod tests {
         let cfg = AppConfig::default();
         assert_eq!(cfg.font_family_ui, "system-ui");
         assert!((cfg.font_size_ui - 13.0).abs() < f32::EPSILON);
-        assert_eq!(cfg.font_family_content, "serif");
+        assert_eq!(cfg.font_family_content, "IBM Plex Sans, sans-serif");
         assert!((cfg.font_size_content - 18.0).abs() < f32::EPSILON);
         assert!((cfg.line_height_content - 1.6).abs() < f32::EPSILON);
         assert_eq!(cfg.left_panel_width, 256);
