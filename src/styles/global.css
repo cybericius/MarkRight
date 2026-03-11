@@ -6,7 +6,7 @@
 :root {
   --font-ui: system-ui;
   --font-ui-size: 13px;
-  --font-content: serif;
+  --font-content: "IBM Plex Sans", sans-serif;
   --font-content-size: 18px;
   --font-content-line-height: 1.6;
 }
