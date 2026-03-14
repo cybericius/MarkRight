@@ -155,6 +155,7 @@ export async function loadConfig(): Promise<void> {
     setFontSizeContent(cfg.font_size_content);
     setLineHeightContent(cfg.line_height_content);
     setTheme(cfg.theme);
+    localStorage.setItem("markright-theme", cfg.theme);
     setZoom(cfg.zoom);
     setContentWidth(cfg.content_width);
     if (cfg.code_theme) setCodeTheme(cfg.code_theme);
@@ -228,7 +229,10 @@ export async function handleInitialFile(): Promise<void> {
 }
 
 export function updateConfig(partial: Partial<AppConfig>): void {
-  if (partial.theme !== undefined) setTheme(partial.theme);
+  if (partial.theme !== undefined) {
+    setTheme(partial.theme);
+    localStorage.setItem("markright-theme", partial.theme);
+  }
   if (partial.left_panel_width !== undefined) setLeftPanelWidth(partial.left_panel_width);
   if (partial.right_panel_width !== undefined) setRightPanelWidth(partial.right_panel_width);
   if (partial.show_left_panel !== undefined) setShowLeftPanel(partial.show_left_panel);
