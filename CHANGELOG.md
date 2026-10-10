@@ -9,6 +9,11 @@ All notable changes to MarkRight are documented in this file.
 ### Fixed
 - Ctrl+A now selects only the document content instead of the whole window (sidebars, status bar)
 
+## [0.2.7] — 2026-03-14
+
+### Fixed
+- White flash on startup when dark mode is active (theme is now applied before first paint)
+
 ## [0.2.6] — 2026-03-11
 
 ### Fixed
