@@ -7,6 +7,7 @@ import FindBar from "../search/FindBar";
 
 const ContentArea: Component = () => {
   let contentRef: HTMLElement | undefined;
+  let docRef: HTMLDivElement | undefined;
   let observer: IntersectionObserver | undefined;
 
   createEffect(() => {
@@ -53,6 +54,24 @@ const ContentArea: Component = () => {
   });
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    // Ctrl+A selects only the document body, not sidebars/status bar.
+    // Text inputs (FindBar, search, settings) keep their native select-all.
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === "a") {
+      const target = e.target as HTMLElement | null;
+      const isEditable =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        target?.isContentEditable;
+      if (!isEditable && docRef) {
+        e.preventDefault();
+        const range = document.createRange();
+        range.selectNodeContents(docRef);
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+      }
+    }
     if (e.ctrlKey && !e.shiftKey && e.key === "f") {
       e.preventDefault();
       setFindBarOpen(!findBarOpen());
@@ -88,7 +107,7 @@ const ContentArea: Component = () => {
   return (
     <div class="flex min-w-0 flex-1 flex-col">
       <main ref={contentRef} class="min-w-0 flex-1 overflow-y-auto p-8">
-        <div class={`mx-auto ${widthClass()}`} style={{ zoom: `${zoom()}%` }}>
+        <div ref={docRef} class={`mx-auto ${widthClass()}`} style={{ zoom: `${zoom()}%` }}>
           <Show
             when={ast()}
             fallback={
