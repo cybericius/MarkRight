@@ -4,6 +4,9 @@ All notable changes to MarkRight are documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Ctrl+A now selects only the document content instead of the whole window (sidebars, status bar)
+
 ## [0.2.6] — 2026-03-11
 
 ### Fixed
