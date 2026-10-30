@@ -19,6 +19,7 @@
 - [x] **UI**: Scroll tracking (intersection observer → active TOC heading)
 - [x] **UI**: Internal link navigation within app
 - [x] **UI**: Syntax-highlighted code blocks
+- [x] **UI**: Mermaid diagrams in ```mermaid code blocks (lazy-loaded, theme-aware, inline error)
 
 ## Phase 1b: Search & Polish
 - [x] **Rust**: Simple grep-like text search across `.md` files

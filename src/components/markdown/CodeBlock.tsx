@@ -1,11 +1,16 @@
 import { Component, Show, createMemo } from "solid-js";
 import type { MdNode } from "../../lib/types";
 import { isDark } from "../../stores/app";
+import MermaidBlock from "./MermaidBlock";
 
 const CodeBlock: Component<{ node: MdNode }> = (props) => {
   const html = createMemo(() =>
     isDark() ? props.node.highlighted_html : (props.node.highlighted_html_light ?? props.node.highlighted_html)
   );
+
+  if (props.node.info?.toLowerCase() === "mermaid") {
+    return <MermaidBlock source={props.node.literal ?? ""} />;
+  }
 
   return (
     <Show

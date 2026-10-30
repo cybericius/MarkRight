@@ -23,7 +23,8 @@
     "@tailwindcss/typography": "^0.5.19",
     "@tauri-apps/api": "^2.10.1",
     "@tauri-apps/plugin-dialog": "^2.6.0",
-    "@tauri-apps/plugin-opener": "^2.5.3"
+    "@tauri-apps/plugin-opener": "^2.5.3",
+    "mermaid": "12.2.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
