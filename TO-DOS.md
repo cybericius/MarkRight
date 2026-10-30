@@ -48,6 +48,17 @@
 - [x] **UI**: ProBadge component for locked feature indicators
 - [x] **UI**: License activation section in Settings panel
 
+## Phase 1b.2: Rich Rendering
+Each comrak extension also needs an `ast.rs` mapping + `MdRenderer` branch (unmapped nodes become `Unknown` and are dropped).
+- [ ] **Security**: Sanitize raw HTML blocks/inline before rendering (no script/event handlers)
+- [ ] **UI**: Resolve relative image paths against the document's directory; render alt text
+- [ ] **Render**: GitHub alerts / Obsidian callouts (`> [!NOTE]`) — comrak `alerts`
+- [ ] **Render**: Footnotes (`[^1]`) — comrak `footnotes`
+- [ ] **Render**: Math (`$x$`, `$$…$$`, ```` ```math ````) — comrak `math_dollars`/`math_code` + lazy KaTeX
+- [ ] **Render**: Emoji shortcodes (`:smile:`) — comrak `shortcodes` cargo feature + option
+- [ ] **Render**: Wikilinks (`[[Page]]`, `[[Page|alias]]`) resolved within the open folder
+- [ ] **Render**: Graphviz (```` ```dot ````) via lazy `@viz-js/viz`
+
 ## Phase 1c: Release v1.0
 - [ ] Platform testing (Windows, macOS, Linux)
 - [ ] Signed builds + auto-update (Tauri updater plugin)
