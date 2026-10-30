@@ -2114,6 +2114,7 @@ name = "markright-app"
 version = "0.2.8"
 dependencies = [
  "markright-core",
+ "percent-encoding",
  "serde",
  "serde_json",
  "tauri",

@@ -1,6 +1,7 @@
 pub mod ast;
 pub mod config;
 pub mod frontmatter;
+pub mod image;
 pub mod license;
 pub mod parser;
 pub mod sanitize;

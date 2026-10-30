@@ -17,6 +17,10 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .manage(state::AppState::with_initial_file(initial_file))
+        .register_asynchronous_uri_scheme_protocol("mrimg", |_ctx, request, responder| {
+            let path = request.uri().path().to_string();
+            std::thread::spawn(move || responder.respond(commands::serve_image(&path)));
+        })
         .invoke_handler(tauri::generate_handler![
             commands::open_folder,
             commands::get_tree,

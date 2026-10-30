@@ -2,6 +2,14 @@ import { Component, For, Switch, Match, Show } from "solid-js";
 import type { MdNode } from "../../lib/types";
 import CodeBlock from "./CodeBlock";
 import MdLink from "./MdLink";
+import RawHtml from "./RawHtml";
+import { currentPath } from "../../stores/app";
+import { resolveImageSrc } from "../../lib/paths";
+
+/** Plain text of a node's descendants (image alt text). */
+function textOf(node: MdNode): string {
+  return node.literal ?? node.children.map(textOf).join("");
+}
 
 const MdRenderer: Component<{ node: MdNode }> = (props) => {
   const children = () => (
@@ -68,11 +76,11 @@ const MdRenderer: Component<{ node: MdNode }> = (props) => {
       </Match>
 
       <Match when={props.node.type === "HtmlBlock"}>
-        <div innerHTML={props.node.literal ?? ""} />
+        <RawHtml html={props.node.literal ?? ""} />
       </Match>
 
       <Match when={props.node.type === "HtmlInline"}>
-        <span innerHTML={props.node.literal ?? ""} />
+        <RawHtml html={props.node.literal ?? ""} inline />
       </Match>
 
       <Match when={props.node.type === "Emph"}>
@@ -94,7 +102,7 @@ const MdRenderer: Component<{ node: MdNode }> = (props) => {
       </Match>
 
       <Match when={props.node.type === "Image"}>
-        <img src={props.node.url ?? ""} alt="" title={props.node.title} />
+        <img src={resolveImageSrc(currentPath(), props.node.url ?? "")} alt={textOf(props.node)} title={props.node.title} />
       </Match>
 
       <Match when={props.node.type === "List" && props.node.list_type === "ordered"}>

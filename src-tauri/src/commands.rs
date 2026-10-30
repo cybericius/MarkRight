@@ -148,3 +148,27 @@ pub fn activate_license(key: String, app: AppHandle) -> Result<LicenseStatus, St
     std::fs::write(&path, key.trim()).map_err(|e| e.to_string())?;
     Ok(check_license_file(&dir))
 }
+
+/// Serve a local image for the `mrimg` protocol. The request path is the
+/// percent-encoded absolute file path (as produced by `convertFileSrc`).
+pub fn serve_image(uri_path: &str) -> tauri::http::Response<Vec<u8>> {
+    let respond = |status: u16, mime: &str, body: Vec<u8>| {
+        tauri::http::Response::builder()
+            .status(status)
+            .header("Content-Type", mime)
+            // Served SVGs must never run script, even if opened directly.
+            .header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; img-src data:")
+            .body(body)
+            .unwrap_or_default()
+    };
+
+    let decoded = percent_encoding::percent_decode_str(uri_path.trim_start_matches('/')).decode_utf8_lossy();
+    let path = PathBuf::from(decoded.as_ref());
+    let Some(mime) = markright_core::image::image_mime(&path) else {
+        return respond(403, "text/plain", Vec::new());
+    };
+    match std::fs::read(&path) {
+        Ok(bytes) => respond(200, mime, bytes),
+        Err(_) => respond(404, "text/plain", Vec::new()),
+    }
+}
