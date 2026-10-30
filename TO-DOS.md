@@ -50,7 +50,7 @@
 
 ## Phase 1b.2: Rich Rendering
 Each comrak extension also needs an `ast.rs` mapping + `MdRenderer` branch (unmapped nodes become `Unknown` and are dropped).
-- [ ] **Security**: Sanitize raw HTML blocks/inline before rendering (no script/event handlers)
+- [x] **Security**: Sanitize raw HTML blocks/inline before rendering (no script/event handlers)
 - [ ] **UI**: Resolve relative image paths against the document's directory; render alt text
 - [ ] **Render**: GitHub alerts / Obsidian callouts (`> [!NOTE]`) — comrak `alerts`
 - [ ] **Render**: Footnotes (`[^1]`) — comrak `footnotes`

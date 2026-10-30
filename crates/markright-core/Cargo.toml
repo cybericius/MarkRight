@@ -6,6 +6,7 @@ description = "Core library for MarkRight - Markdown parsing, tree building, sea
 license = "AGPL-3.0-only"
 
 [dependencies]
+ammonia = "4"
 base64 = "0.22"
 comrak = { version = "0.36", default-features = false }
 ed25519-dalek = { version = "2", features = ["std"] }

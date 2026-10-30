@@ -4,6 +4,8 @@ use comrak::nodes::{Ast, NodeValue};
 use comrak::{Arena, Options, parse_document};
 use serde::Serialize;
 
+use crate::sanitize::{UrlKind, safe_url, sanitize_html};
+
 /// A serializable Markdown AST node.
 ///
 /// Uses a flat struct with a `type` discriminator and optional fields rather than
@@ -186,12 +188,12 @@ fn convert_node<'a>(
         }
         NodeValue::HtmlBlock(h) => {
             let mut n = MdNode::new("HtmlBlock");
-            n.literal = Some(h.literal.clone());
+            n.literal = Some(sanitize_html(&h.literal));
             n
         }
         NodeValue::HtmlInline(h) => {
             let mut n = MdNode::new("HtmlInline");
-            n.literal = Some(h.clone());
+            n.literal = Some(sanitize_html(h));
             n
         }
         NodeValue::Emph => MdNode::new("Emph"),
@@ -199,7 +201,7 @@ fn convert_node<'a>(
         NodeValue::Strikethrough => MdNode::new("Strikethrough"),
         NodeValue::Link(link) => {
             let mut n = MdNode::new("Link");
-            n.url = Some(link.url.clone());
+            n.url = safe_url(&link.url, UrlKind::Link);
             if !link.title.is_empty() {
                 n.title = Some(link.title.clone());
             }
@@ -207,7 +209,7 @@ fn convert_node<'a>(
         }
         NodeValue::Image(img) => {
             let mut n = MdNode::new("Image");
-            n.url = Some(img.url.clone());
+            n.url = safe_url(&img.url, UrlKind::Image);
             if !img.title.is_empty() {
                 n.title = Some(img.title.clone());
             }
@@ -336,5 +338,39 @@ mod tests {
         assert_eq!(slugify("Hello World"), "hello-world");
         assert_eq!(slugify("What's New?"), "whats-new");
         assert_eq!(slugify("  Multiple   Spaces  "), "multiple-spaces");
+    }
+
+    fn walk<'n>(node: &'n MdNode, out: &mut Vec<&'n MdNode>) {
+        out.push(node);
+        for c in &node.children {
+            walk(c, out);
+        }
+    }
+
+    #[test]
+    fn test_raw_html_is_sanitized() {
+        let ast = serialize_ast("<img src=x onerror=alert(1)>\n\ntext <span onclick=\"x()\">hi</span>\n");
+        let mut nodes = Vec::new();
+        walk(&ast, &mut nodes);
+        let html: Vec<_> = nodes
+            .iter()
+            .filter(|n| n.node_type.starts_with("Html"))
+            .filter_map(|n| n.literal.as_deref())
+            .collect();
+        assert!(html.len() >= 2, "{html:?}");
+        assert!(html.iter().all(|h| !h.contains("onerror") && !h.contains("onclick")), "{html:?}");
+    }
+
+    #[test]
+    fn test_dangerous_link_and_image_urls_dropped() {
+        let ast = serialize_ast("[a](javascript:alert(1)) ![b](vbscript:x) [c](other.md) ![d](img/d.png)\n");
+        let mut nodes = Vec::new();
+        walk(&ast, &mut nodes);
+        let urls: Vec<_> = nodes
+            .iter()
+            .filter(|n| n.node_type == "Link" || n.node_type == "Image")
+            .map(|n| n.url.as_deref())
+            .collect();
+        assert_eq!(urls, vec![None, None, Some("other.md"), Some("img/d.png")]);
     }
 }

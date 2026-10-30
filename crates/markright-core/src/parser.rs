@@ -22,7 +22,7 @@ pub fn parse_markdown(input: &str) -> ParsedDocument {
     options.extension.strikethrough = true;
     options.extension.tasklist = true;
     options.extension.autolink = true;
-    options.render.unsafe_ = true;
+    // Raw HTML stays escaped: this output would go straight into the webview.
 
     let root = parse_document(&arena, input, &options);
 

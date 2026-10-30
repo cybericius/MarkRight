@@ -49,7 +49,8 @@ const MdLink: Component<{
 
   return (
     <a
-      href={props.url}
+      // Unsafe URLs arrive empty; an empty href would reload the app
+      href={props.url || undefined}
       title={props.title}
       onClick={handleClick}
       target={isExternal() ? "_blank" : undefined}
