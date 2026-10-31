@@ -52,6 +52,7 @@
 Each comrak extension also needs an `ast.rs` mapping + `MdRenderer` branch (unmapped nodes become `Unknown` and are dropped).
 - [x] **Security**: Sanitize raw HTML blocks/inline before rendering (no script/event handlers)
 - [x] **UI**: Resolve relative image paths against the document's directory; render alt text
+- [x] **Security**: Content Security Policy for the app window (`csp` + `devCsp` in `tauri.conf.json`)
 - [ ] **Render**: GitHub alerts / Obsidian callouts (`> [!NOTE]`) — comrak `alerts`
 - [ ] **Render**: Footnotes (`[^1]`) — comrak `footnotes`
 - [ ] **Render**: Math (`$x$`, `$$…$$`, ```` ```math ````) — comrak `math_dollars`/`math_code` + lazy KaTeX
