@@ -172,3 +172,19 @@ pub fn serve_image(uri_path: &str) -> tauri::http::Response<Vec<u8>> {
         Err(_) => respond(404, "text/plain", Vec::new()),
     }
 }
+
+/// Open a non-Markdown file linked from a document.
+///
+/// Only files inside the open folder are allowed. Passive document/media types
+/// open in the default app; anything else is revealed in the file manager.
+#[tauri::command]
+#[allow(clippy::needless_pass_by_value)]
+pub fn open_linked_file(path: String, state: State<'_, AppState>) -> Result<(), String> {
+    let root = state.root_folder.lock().unwrap().clone().ok_or("No folder is open")?;
+    let target = markright_core::links::resolve_in_root(&root, std::path::Path::new(&path))?;
+    if target.is_file() && markright_core::links::opens_safely(&target) {
+        tauri_plugin_opener::open_path(&target, None::<&str>).map_err(|e| e.to_string())
+    } else {
+        tauri_plugin_opener::reveal_item_in_dir(&target).map_err(|e| e.to_string())
+    }
+}

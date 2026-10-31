@@ -32,6 +32,7 @@ fn main() {
             commands::check_license,
             commands::activate_license,
             commands::get_initial_file,
+            commands::open_linked_file,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

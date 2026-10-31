@@ -45,3 +45,7 @@ export async function checkLicense(): Promise<LicenseStatus> {
 export async function activateLicense(key: string): Promise<LicenseStatus> {
   return invoke<LicenseStatus>("activate_license", { key });
 }
+
+export async function openLinkedFile(path: string): Promise<void> {
+  return invoke<void>("open_linked_file", { path });
+}
