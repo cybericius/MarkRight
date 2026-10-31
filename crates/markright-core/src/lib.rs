@@ -6,6 +6,7 @@ pub mod image;
 pub mod license;
 pub mod links;
 pub mod parser;
+pub mod rawhtml;
 pub mod sanitize;
 pub mod search;
 pub mod toc;

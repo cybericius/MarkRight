@@ -3,6 +3,7 @@ import type { MdNode } from "../../lib/types";
 import CodeBlock from "./CodeBlock";
 import MdLink from "./MdLink";
 import RawHtml from "./RawHtml";
+import HtmlElement from "./HtmlElement";
 import Alert from "./Alert";
 import MathBlock from "./MathBlock";
 import WikiLink from "./WikiLink";
@@ -93,6 +94,10 @@ const MdRenderer: Component<{ node: MdNode }> = (props) => {
 
       <Match when={props.node.type === "CodeBlock"}>
         <CodeBlock node={props.node} />
+      </Match>
+
+      <Match when={props.node.type === "HtmlElement"}>
+        <HtmlElement node={props.node} />
       </Match>
 
       <Match when={props.node.type === "HtmlBlock"}>

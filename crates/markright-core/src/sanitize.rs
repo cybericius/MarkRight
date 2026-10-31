@@ -10,6 +10,8 @@ static HTML_CLEANER: LazyLock<ammonia::Builder<'static>> = LazyLock::new(|| {
     let mut b = ammonia::Builder::default();
     // `<p align="center">` is common in READMEs and harmless.
     b.add_generic_attributes(["align"]);
+    // `<details open>` starts expanded; harmless.
+    b.add_tag_attributes("details", ["open"]);
     b
 });
 

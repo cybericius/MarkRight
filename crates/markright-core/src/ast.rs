@@ -4,7 +4,7 @@ use comrak::nodes::{Ast, NodeValue};
 use comrak::{Arena, Options, parse_document};
 use serde::Serialize;
 
-use crate::sanitize::{UrlKind, safe_url, sanitize_html};
+use crate::sanitize::{UrlKind, safe_url};
 
 /// A serializable Markdown AST node.
 ///
@@ -143,6 +143,7 @@ pub fn serialize_ast_themed(input: &str, code_theme: &str) -> MdNode {
 
     let mut doc = convert_node(root, &mut id_counts, code_theme);
     gather_footnotes(&mut doc);
+    crate::rawhtml::finalize(&mut doc);
     doc
 }
 
@@ -284,12 +285,13 @@ fn convert_node<'a>(
         }
         NodeValue::HtmlBlock(h) => {
             let mut n = MdNode::new("HtmlBlock");
-            n.literal = Some(sanitize_html(&h.literal));
+            // Raw here; paired and sanitized once in `rawhtml::finalize`.
+            n.literal = Some(h.literal.clone());
             n
         }
         NodeValue::HtmlInline(h) => {
             let mut n = MdNode::new("HtmlInline");
-            n.literal = Some(sanitize_html(h));
+            n.literal = Some(h.clone());
             n
         }
         NodeValue::Emph => MdNode::new("Emph"),
