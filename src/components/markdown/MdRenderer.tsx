@@ -5,6 +5,7 @@ import MdLink from "./MdLink";
 import RawHtml from "./RawHtml";
 import Alert from "./Alert";
 import MathBlock from "./MathBlock";
+import WikiLink from "./WikiLink";
 import { FootnoteRef, FootnoteSection } from "./Footnotes";
 import { currentPath } from "../../stores/app";
 import { resolveImageSrc } from "../../lib/paths";
@@ -112,6 +113,10 @@ const MdRenderer: Component<{ node: MdNode }> = (props) => {
 
       <Match when={props.node.type === "Strikethrough"}>
         <del>{children()}</del>
+      </Match>
+
+      <Match when={props.node.type === "WikiLink"}>
+        <WikiLink node={props.node}>{children()}</WikiLink>
       </Match>
 
       <Match when={props.node.type === "Link"}>

@@ -49,3 +49,7 @@ export async function activateLicense(key: string): Promise<LicenseStatus> {
 export async function openLinkedFile(path: string): Promise<void> {
   return invoke<void>("open_linked_file", { path });
 }
+
+export async function resolveWikilink(from: string, target: string): Promise<string | null> {
+  return invoke<string | null>("resolve_wikilink", { from, target });
+}

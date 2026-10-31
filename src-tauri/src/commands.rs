@@ -188,3 +188,13 @@ pub fn open_linked_file(path: String, state: State<'_, AppState>) -> Result<(), 
         tauri_plugin_opener::reveal_item_in_dir(&target).map_err(|e| e.to_string())
     }
 }
+
+/// Resolve a wikilink target (`[[target]]`) from the document at `from` to a
+/// file inside the open folder, Obsidian-style. `None` if not found.
+#[tauri::command]
+#[allow(clippy::needless_pass_by_value)]
+pub fn resolve_wikilink(from: String, target: String, state: State<'_, AppState>) -> Option<String> {
+    let root = state.root_folder.lock().unwrap().clone()?;
+    markright_core::links::resolve_wikilink(&root, std::path::Path::new(&from), &target)
+        .map(|p| p.to_string_lossy().into_owned())
+}

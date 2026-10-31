@@ -135,6 +135,7 @@ pub fn serialize_ast_themed(input: &str, code_theme: &str) -> MdNode {
     options.extension.math_dollars = true;
     options.extension.math_code = true;
     options.extension.shortcodes = true;
+    options.extension.wikilinks_title_after_pipe = true;
     options.render.unsafe_ = true;
 
     let root = parse_document(&arena, input, &options);
@@ -294,6 +295,8 @@ fn convert_node<'a>(
         NodeValue::Emph => MdNode::new("Emph"),
         NodeValue::Strong => MdNode::new("Strong"),
         NodeValue::Strikethrough => MdNode::new("Strikethrough"),
+        // `[[Page#Heading|label]]`; comrak puts the label in the children.
+        NodeValue::WikiLink(w) => wikilink_node(&w.url),
         NodeValue::Link(link) => {
             let mut n = MdNode::new("Link");
             n.url = safe_url(&link.url, UrlKind::Link);
@@ -360,12 +363,69 @@ fn convert_node<'a>(
         .children()
         .map(|c| convert_node(c, id_counts, code_theme))
         .collect();
+    split_wikilink_embeds(&mut md_node.children);
 
     if md_node.node_type == "BlockQuote" {
         crate::alert::convert_blockquote(&mut md_node);
     }
 
     md_node
+}
+
+/// A `WikiLink` node: url = page part (empty for a heading in this
+/// document), id = the heading's slug.
+fn wikilink_node(target: &str) -> MdNode {
+    let mut n = MdNode::new("WikiLink");
+    let (page, heading) = target.split_once('#').unwrap_or((target, ""));
+    n.url = Some(page.trim().to_string());
+    if !heading.trim().is_empty() {
+        n.id = Some(slugify(heading.trim()));
+    }
+    n
+}
+
+/// Obsidian embeds `![[target|label]]`. comrak treats `![` as the start of an
+/// image, so the whole embed stays inside a text node; split it out into a
+/// `WikiLink` with `info = "embed"`.
+fn split_wikilink_embeds(children: &mut Vec<MdNode>) {
+    if !children.iter().any(|c| c.node_type == "Text" && c.literal.as_deref().is_some_and(|t| t.contains("![["))) {
+        return;
+    }
+    let mut out = Vec::with_capacity(children.len());
+    for child in children.drain(..) {
+        let Some(text) = child.literal.as_deref().filter(|_| child.node_type == "Text") else {
+            out.push(child);
+            continue;
+        };
+        let mut rest = text;
+        while let Some(start) = rest.find("![[") {
+            let inner_start = start + 3;
+            let Some(len) = rest[inner_start..].find("]]") else { break };
+            let inner = &rest[inner_start..inner_start + len];
+            if inner.is_empty() || inner.contains('[') {
+                break;
+            }
+            let (target, label) = inner.split_once('|').unwrap_or((inner, inner));
+            if start > 0 {
+                let mut t = MdNode::new("Text");
+                t.literal = Some(rest[..start].to_string());
+                out.push(t);
+            }
+            let mut link = wikilink_node(target);
+            link.info = Some("embed".to_string());
+            let mut label_node = MdNode::new("Text");
+            label_node.literal = Some(label.trim().to_string());
+            link.children.push(label_node);
+            out.push(link);
+            rest = &rest[inner_start + len + 2..];
+        }
+        if !rest.is_empty() {
+            let mut t = MdNode::new("Text");
+            t.literal = Some(rest.to_string());
+            out.push(t);
+        }
+    }
+    *children = out;
 }
 
 #[cfg(test)]
@@ -437,6 +497,10 @@ mod tests {
         assert_eq!(slugify("Hello World"), "hello-world");
         assert_eq!(slugify("What's New?"), "whats-new");
         assert_eq!(slugify("  Multiple   Spaces  "), "multiple-spaces");
+    }
+
+    fn text_of(n: &MdNode) -> String {
+        n.literal.clone().unwrap_or_default() + &n.children.iter().map(text_of).collect::<String>()
     }
 
     fn walk<'n>(node: &'n MdNode, out: &mut Vec<&'n MdNode>) {
@@ -523,6 +587,34 @@ mod tests {
         assert_eq!(defs.len(), 1, "definition must not be dropped");
         let r = &find(&ast, "FootnoteReference")[0];
         assert_eq!(r.id, defs[0].id, "reference and definition ids must match for the DOM links");
+    }
+
+    #[test]
+    fn test_wikilinks() {
+        let ast = serialize_ast("See [[Some Page]], [[Other#Big Heading|alias]], [[#Local Part]] and ![[pic one.png]] here!\n");
+        let links = find(&ast, "WikiLink");
+        let got: Vec<_> = links
+            .iter()
+            .map(|l| (l.url.as_deref().unwrap(), l.id.as_deref(), l.info.as_deref(), text_of(l)))
+            .collect();
+        assert_eq!(
+            got,
+            vec![
+                ("Some Page", None, None, "Some Page".to_string()),
+                ("Other", Some("big-heading"), None, "alias".to_string()),
+                ("", Some("local-part"), None, "#Local Part".to_string()),
+                ("pic one.png", None, Some("embed"), "pic one.png".to_string()),
+            ]
+        );
+        // The embed syntax is consumed; other text, including a trailing `!`, is kept.
+        let texts: String = find(&ast, "Text").iter().filter(|t| !t.literal.as_deref().unwrap_or("").contains("pic")).filter_map(|t| t.literal.clone()).collect();
+        assert!(!texts.contains("![["), "{texts}");
+        assert!(texts.ends_with(" here!"), "{texts}");
+
+        let ast = serialize_ast("a ![[Note#Sec|shown]] b ![[unclosed\n");
+        let e = &find(&ast, "WikiLink")[0];
+        assert_eq!((e.url.as_deref(), e.id.as_deref(), e.info.as_deref(), text_of(e)), (Some("Note"), Some("sec"), Some("embed"), "shown".to_string()));
+        assert!(find(&ast, "Text").iter().any(|t| t.literal.as_deref().is_some_and(|l| l.contains("![[unclosed"))));
     }
 
     #[test]
