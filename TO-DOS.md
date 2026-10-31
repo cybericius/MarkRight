@@ -61,7 +61,7 @@ Each comrak extension also needs an `ast.rs` mapping + `MdRenderer` branch (unma
 - [x] **Render**: Emoji shortcodes (`:smile:`) — comrak `shortcodes` cargo feature + option
 - [x] **Render**: Wikilinks (`[[Page]]`, `[[Page|alias]]`, `[[Page#Heading]]`, `![[img.png|300]]`) resolved within the open folder, Obsidian-style lookup
 - [ ] **Render**: Note embeds / transclusion (`![[Note]]`, `![[Note#Section]]`) — currently rendered as a link
-- [ ] **Render**: Graphviz (```` ```dot ````) via lazy `@viz-js/viz`
+- [x] **Render**: Graphviz (```` ```dot ```` / ```` ```graphviz ````) via lazy `@viz-js/viz`; links stripped from SVG, CSP allows `'wasm-unsafe-eval'`
 
 ## Phase 1c: Release v1.0
 - [ ] Platform testing (Windows, macOS, Linux)

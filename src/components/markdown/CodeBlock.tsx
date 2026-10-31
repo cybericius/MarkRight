@@ -2,6 +2,7 @@ import { Component, Show, createMemo } from "solid-js";
 import type { MdNode } from "../../lib/types";
 import { isDark } from "../../stores/app";
 import MermaidBlock from "./MermaidBlock";
+import GraphvizBlock from "./GraphvizBlock";
 
 const CodeBlock: Component<{ node: MdNode }> = (props) => {
   const html = createMemo(() =>
@@ -10,6 +11,11 @@ const CodeBlock: Component<{ node: MdNode }> = (props) => {
 
   if (props.node.info?.toLowerCase() === "mermaid") {
     return <MermaidBlock source={props.node.literal ?? ""} />;
+  }
+
+  const lang = props.node.info?.toLowerCase();
+  if (lang === "dot" || lang === "graphviz") {
+    return <GraphvizBlock source={props.node.literal ?? ""} />;
   }
 
   return (
