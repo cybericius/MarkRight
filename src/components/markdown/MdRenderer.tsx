@@ -4,6 +4,8 @@ import CodeBlock from "./CodeBlock";
 import MdLink from "./MdLink";
 import RawHtml from "./RawHtml";
 import Alert from "./Alert";
+import MathBlock from "./MathBlock";
+import { FootnoteRef, FootnoteSection } from "./Footnotes";
 import { currentPath } from "../../stores/app";
 import { resolveImageSrc } from "../../lib/paths";
 
@@ -62,6 +64,18 @@ const MdRenderer: Component<{ node: MdNode }> = (props) => {
 
       <Match when={props.node.type === "ThematicBreak"}>
         <hr />
+      </Match>
+
+      <Match when={props.node.type === "Math"}>
+        <MathBlock node={props.node} />
+      </Match>
+
+      <Match when={props.node.type === "FootnoteReference"}>
+        <FootnoteRef node={props.node} />
+      </Match>
+
+      <Match when={props.node.type === "FootnoteSection"}>
+        <FootnoteSection node={props.node} />
       </Match>
 
       <Match when={props.node.type === "Alert"}>

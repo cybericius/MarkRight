@@ -516,6 +516,16 @@ mod tests {
     }
 
     #[test]
+    fn test_footnote_label_case_insensitive() {
+        // CommonMark-style labels match case-insensitively: [^Note] -> [^note]:
+        let ast = serialize_ast("x[^Note]\n\n[^note]: body\n");
+        let defs = find(&ast, "FootnoteDefinition");
+        assert_eq!(defs.len(), 1, "definition must not be dropped");
+        let r = &find(&ast, "FootnoteReference")[0];
+        assert_eq!(r.id, defs[0].id, "reference and definition ids must match for the DOM links");
+    }
+
+    #[test]
     fn test_no_footnotes_no_section() {
         let ast = serialize_ast("plain\n");
         assert!(find(&ast, "FootnoteSection").is_empty());
