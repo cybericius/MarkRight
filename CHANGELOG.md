@@ -4,6 +4,24 @@ All notable changes to MarkRight are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-10-31
+
+### Added
+- Mermaid diagrams in ```` ```mermaid ```` code blocks
+- Graphviz diagrams in ```` ```dot ```` and ```` ```graphviz ```` code blocks
+- Math rendering with KaTeX: `$inline$`, `$$display$$` and ```` ```math ```` blocks
+- Footnotes, collected at the end of the document with back-references
+- GitHub alerts and Obsidian callouts (`> [!NOTE]`), including Obsidian types, aliases, custom titles and folding
+- Emoji shortcodes such as `:smile:`
+- Wikilinks: `[[Page]]`, `[[Page#Heading|alias]]`, image embeds `![[image.png|300]]` and note embeds `![[Note]]` / `![[Note#Section]]`
+- Relative images load from the document's folder
+- Links to local files (PDFs, images, and other documents) open in their default app
+- Raw HTML that wraps Markdown (`<details>`, `<kbd>`, aligned `<div>`) renders as a single element
+
+### Security
+- Raw HTML and link URLs in documents are sanitized before rendering
+- Content Security Policy for the app window
+
 ## [0.2.8] — 2026-10-10
 
 ### Fixed
