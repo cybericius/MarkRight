@@ -15,11 +15,14 @@ fn canonical_kind(marker: &str) -> &'static str {
         "info" => "info",
         "todo" => "todo",
         "tip" | "hint" => "tip",
+        // GitHub's IMPORTANT is its own (purple) alert; Obsidian makes it an
+        // alias of tip. GitHub's meaning wins, as for caution below.
         "important" => "important",
         "success" | "check" | "done" => "success",
         "question" | "help" | "faq" => "question",
         "warning" | "attention" => "warning",
-        // GitHub's CAUTION is its red alert; Obsidian treats it as a warning.
+        // GitHub's CAUTION is its red alert (`--fgColor-danger` in GitHub's
+        // markdown CSS); Obsidian's docs list it as an alias of warning.
         // GitHub files are more common, so it keeps GitHub's meaning.
         "caution" => "caution",
         "failure" | "fail" | "missing" => "failure",
