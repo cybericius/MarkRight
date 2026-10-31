@@ -18,6 +18,10 @@ export interface MdNode {
   alignments?: string[];
   /** Alert fold state (Obsidian `[!type]+` / `[!type]-`). */
   fold?: "open" | "closed";
+  /** FootnoteReference: which reference to this footnote this is (1-based). */
+  ref_num?: number;
+  /** FootnoteDefinition: how many references point to it. */
+  ref_count?: number;
 }
 
 /** File/directory entry in the navigation tree. */
