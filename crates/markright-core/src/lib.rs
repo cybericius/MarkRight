@@ -1,3 +1,4 @@
+pub mod alert;
 pub mod ast;
 pub mod config;
 pub mod frontmatter;

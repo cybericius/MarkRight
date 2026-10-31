@@ -43,10 +43,13 @@ pub struct MdNode {
     pub header: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub alignments: Option<Vec<String>>,
+    /// Alert fold state: "open" or "closed" (Obsidian `[!type]+` / `[!type]-`).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fold: Option<String>,
 }
 
 impl MdNode {
-    fn new(node_type: &str) -> Self {
+    pub(crate) fn new(node_type: &str) -> Self {
         Self {
             node_type: node_type.to_string(),
             children: Vec::new(),
@@ -64,6 +67,7 @@ impl MdNode {
             checked: None,
             header: None,
             alignments: None,
+            fold: None,
         }
     }
 }
@@ -265,6 +269,10 @@ fn convert_node<'a>(
         .children()
         .map(|c| convert_node(c, id_counts, code_theme))
         .collect();
+
+    if md_node.node_type == "BlockQuote" {
+        crate::alert::convert_blockquote(&mut md_node);
+    }
 
     md_node
 }

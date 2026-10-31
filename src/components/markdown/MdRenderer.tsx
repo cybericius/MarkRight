@@ -3,6 +3,7 @@ import type { MdNode } from "../../lib/types";
 import CodeBlock from "./CodeBlock";
 import MdLink from "./MdLink";
 import RawHtml from "./RawHtml";
+import Alert from "./Alert";
 import { currentPath } from "../../stores/app";
 import { resolveImageSrc } from "../../lib/paths";
 
@@ -61,6 +62,10 @@ const MdRenderer: Component<{ node: MdNode }> = (props) => {
 
       <Match when={props.node.type === "ThematicBreak"}>
         <hr />
+      </Match>
+
+      <Match when={props.node.type === "Alert"}>
+        <Alert node={props.node} />
       </Match>
 
       <Match when={props.node.type === "BlockQuote"}>

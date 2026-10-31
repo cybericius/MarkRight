@@ -16,6 +16,8 @@ export interface MdNode {
   checked?: boolean;
   header?: boolean;
   alignments?: string[];
+  /** Alert fold state (Obsidian `[!type]+` / `[!type]-`). */
+  fold?: "open" | "closed";
 }
 
 /** File/directory entry in the navigation tree. */
