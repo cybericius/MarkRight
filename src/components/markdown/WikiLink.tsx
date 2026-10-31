@@ -4,6 +4,7 @@ import { currentPath, tree } from "../../stores/app";
 import { openDocument } from "../../stores/actions";
 import { openLinkedFile, resolveWikilink } from "../../lib/tauri";
 import { resolveImageSrc } from "../../lib/paths";
+import NoteEmbed from "./NoteEmbed";
 
 const IMAGE_EXT = /\.(png|jpe?g|gif|webp|avif|svg|bmp)$/i;
 const MARKDOWN_EXT = /\.(md|markdown|mdown|mkd)$/i;
@@ -97,8 +98,11 @@ const WikiLink: Component<{ node: MdNode; children: JSX.Element }> = (props) => 
           height={size()?.[1]}
         />
       </Match>
+      <Match when={props.node.info === "embed" && MARKDOWN_EXT.test(resolved() ?? "")}>
+        <NoteEmbed path={resolved()!} headingId={props.node.id} link={link()} />
+      </Match>
       <Match when={props.node.info === "embed"}>
-        {/* Note embeds (transclusion) aren't supported yet: show a link */}
+        {/* Other files (PDF, ...) can't be embedded: show a link */}
         {link()}
       </Match>
     </Switch>

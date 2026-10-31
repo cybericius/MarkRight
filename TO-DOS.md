@@ -60,7 +60,7 @@ Each comrak extension also needs an `ast.rs` mapping + `MdRenderer` branch (unma
 - [x] **Render**: Math (`$x$`, `$$…$$`, ```` ```math ````) — comrak `math_dollars`/`math_code` + lazy KaTeX (shared with mermaid's version)
 - [x] **Render**: Emoji shortcodes (`:smile:`) — comrak `shortcodes` cargo feature + option
 - [x] **Render**: Wikilinks (`[[Page]]`, `[[Page|alias]]`, `[[Page#Heading]]`, `![[img.png|300]]`) resolved within the open folder, Obsidian-style lookup
-- [ ] **Render**: Note embeds / transclusion (`![[Note]]`, `![[Note#Section]]`) — currently rendered as a link
+- [x] **Render**: Note embeds / transclusion (`![[Note]]`, `![[Note#Section]]`) — framed inline content, cycle/depth guard, ids isolated
 - [x] **Render**: Graphviz (```` ```dot ```` / ```` ```graphviz ````) via lazy `@viz-js/viz`; links stripped from SVG, CSP allows `'wasm-unsafe-eval'`
 
 ## Phase 1c: Release v1.0
