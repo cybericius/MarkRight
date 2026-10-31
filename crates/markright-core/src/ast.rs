@@ -46,6 +46,12 @@ pub struct MdNode {
     /// Alert fold state: "open" or "closed" (Obsidian `[!type]+` / `[!type]-`).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fold: Option<String>,
+    /// Footnote reference: 1-based index of this reference to the same footnote.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ref_num: Option<u32>,
+    /// Footnote definition: total number of references to it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ref_count: Option<u32>,
 }
 
 impl MdNode {
@@ -68,6 +74,8 @@ impl MdNode {
             header: None,
             alignments: None,
             fold: None,
+            ref_num: None,
+            ref_count: None,
         }
     }
 }
@@ -80,6 +88,7 @@ fn collect_text<'a>(node: &'a comrak::arena_tree::Node<'a, std::cell::RefCell<As
         match &data.value {
             NodeValue::Text(t) => text.push_str(t),
             NodeValue::Code(c) => text.push_str(&c.literal),
+            NodeValue::ShortCode(sc) => text.push_str(&sc.emoji),
             _ => {}
         }
         drop(data);
@@ -122,12 +131,65 @@ pub fn serialize_ast_themed(input: &str, code_theme: &str) -> MdNode {
     options.extension.strikethrough = true;
     options.extension.tasklist = true;
     options.extension.autolink = true;
+    options.extension.footnotes = true;
+    options.extension.math_dollars = true;
+    options.extension.math_code = true;
+    options.extension.shortcodes = true;
     options.render.unsafe_ = true;
 
     let root = parse_document(&arena, input, &options);
     let mut id_counts: HashMap<String, usize> = HashMap::new();
 
-    convert_node(root, &mut id_counts, code_theme)
+    let mut doc = convert_node(root, &mut id_counts, code_theme);
+    gather_footnotes(&mut doc);
+    doc
+}
+
+fn collect_footnote_numbers(node: &MdNode, numbers: &mut HashMap<String, usize>) {
+    if node.node_type == "FootnoteReference"
+        && let (Some(id), Some(n)) = (&node.id, node.start)
+    {
+        numbers.entry(id.clone()).or_insert(n);
+    }
+    for c in &node.children {
+        collect_footnote_numbers(c, numbers);
+    }
+}
+
+fn take_footnote_definitions(node: &mut MdNode, out: &mut Vec<MdNode>) {
+    let children = std::mem::take(&mut node.children);
+    for mut c in children {
+        if c.node_type == "FootnoteDefinition" {
+            out.push(c);
+        } else {
+            take_footnote_definitions(&mut c, out);
+            node.children.push(c);
+        }
+    }
+}
+
+/// Number the footnote definitions like their references and move them into a
+/// single `FootnoteSection` that is the last child of the document, ordered by
+/// number. Definitions without a reference are dropped.
+fn gather_footnotes(doc: &mut MdNode) {
+    let mut numbers = HashMap::new();
+    collect_footnote_numbers(doc, &mut numbers);
+    let mut defs = Vec::new();
+    take_footnote_definitions(doc, &mut defs);
+    let mut defs: Vec<MdNode> = defs
+        .into_iter()
+        .filter_map(|mut d| {
+            d.start = Some(*numbers.get(d.id.as_deref()?)?);
+            Some(d)
+        })
+        .collect();
+    if defs.is_empty() {
+        return;
+    }
+    defs.sort_by_key(|d| d.start);
+    let mut section = MdNode::new("FootnoteSection");
+    section.children = defs;
+    doc.children.push(section);
 }
 
 #[allow(clippy::too_many_lines)]
@@ -168,6 +230,30 @@ fn convert_node<'a>(
             n.literal = Some(t.clone());
             n
         }
+        NodeValue::ShortCode(sc) => {
+            let mut n = MdNode::new("Text");
+            n.literal = Some(sc.emoji.clone());
+            n
+        }
+        NodeValue::Math(m) => {
+            let mut n = MdNode::new("Math");
+            n.literal = Some(m.literal.clone());
+            n.info = Some(if m.display_math { "display" } else { "inline" }.to_string());
+            n
+        }
+        NodeValue::FootnoteReference(r) => {
+            let mut n = MdNode::new("FootnoteReference");
+            n.id = Some(r.name.clone());
+            n.start = Some(r.ix as usize);
+            n.ref_num = Some(r.ref_num);
+            n
+        }
+        NodeValue::FootnoteDefinition(d) => {
+            let mut n = MdNode::new("FootnoteDefinition");
+            n.id = Some(d.name.clone());
+            n.ref_count = Some(d.total_references);
+            n
+        }
         NodeValue::SoftBreak => MdNode::new("SoftBreak"),
         NodeValue::LineBreak => MdNode::new("LineBreak"),
         NodeValue::ThematicBreak => MdNode::new("ThematicBreak"),
@@ -180,6 +266,11 @@ fn convert_node<'a>(
         NodeValue::CodeBlock(cb) => {
             let mut n = MdNode::new("CodeBlock");
             n.literal = Some(cb.literal.clone());
+            if cb.info.split_whitespace().next() == Some("math") {
+                n.node_type = "Math".to_string();
+                n.info = Some("display".to_string());
+                return n;
+            }
             let lang = cb.info.split_whitespace().next().unwrap_or("").to_string();
             if !lang.is_empty() {
                 n.info = Some(lang.clone());
@@ -380,5 +471,104 @@ mod tests {
             .map(|n| n.url.as_deref())
             .collect();
         assert_eq!(urls, vec![None, None, Some("other.md"), Some("img/d.png")]);
+    }
+
+    fn find<'n>(ast: &'n MdNode, ty: &str) -> Vec<&'n MdNode> {
+        let mut nodes = Vec::new();
+        walk(ast, &mut nodes);
+        nodes.into_iter().filter(|n| n.node_type == ty).collect()
+    }
+
+    #[test]
+    fn test_footnote_numbering_and_section() {
+        let ast = serialize_ast("A[^b] and B[^a] and again[^b].\n\n[^a]: Alpha\n[^b]: Beta\n");
+        let refs = find(&ast, "FootnoteReference");
+        let got: Vec<_> = refs.iter().map(|r| (r.id.clone().unwrap(), r.start, r.ref_num)).collect();
+        assert_eq!(
+            got,
+            vec![
+                ("b".to_string(), Some(1), Some(1)),
+                ("a".to_string(), Some(2), Some(1)),
+                ("b".to_string(), Some(1), Some(2)),
+            ]
+        );
+        let last = ast.children.last().unwrap();
+        assert_eq!(last.node_type, "FootnoteSection");
+        assert_eq!(find(&ast, "FootnoteSection").len(), 1);
+        let defs: Vec<_> = last.children.iter().map(|d| (d.id.clone().unwrap(), d.start, d.ref_count)).collect();
+        assert_eq!(defs, vec![("b".to_string(), Some(1), Some(2)), ("a".to_string(), Some(2), Some(1))]);
+    }
+
+    #[test]
+    fn test_footnote_definition_multiple_paragraphs() {
+        let ast = serialize_ast("x[^1]\n\n[^1]: First\n\n    Second\n");
+        let defs = find(&ast, "FootnoteDefinition");
+        assert_eq!(defs.len(), 1);
+        let paras = defs[0].children.iter().filter(|c| c.node_type == "Paragraph").count();
+        assert_eq!(paras, 2);
+    }
+
+    #[test]
+    fn test_footnote_unreferenced_definition_dropped() {
+        let ast = serialize_ast("text\n\n[^zz]: never used\n");
+        assert!(find(&ast, "FootnoteDefinition").is_empty());
+        assert!(find(&ast, "FootnoteSection").is_empty());
+    }
+
+    #[test]
+    fn test_no_footnotes_no_section() {
+        let ast = serialize_ast("plain\n");
+        assert!(find(&ast, "FootnoteSection").is_empty());
+    }
+
+    #[test]
+    fn test_footnote_json_shape() {
+        let ast = serialize_ast("x[^1]\n\n[^1]: d\n");
+        let v = serde_json::to_value(&ast).unwrap();
+        let r = &v["children"][0]["children"][1];
+        assert_eq!(r["type"], "FootnoteReference");
+        assert_eq!(r["ref_num"], 1);
+        assert_eq!(r["start"], 1);
+        assert!(r.get("ref_count").is_none());
+    }
+
+    #[test]
+    fn test_math_inline_display_and_fence() {
+        let ast = serialize_ast("a $x^2$ b $`y`$ c\n\n$$z$$\n\n```math\nE=mc^2\n```\n");
+        let m: Vec<_> = find(&ast, "Math")
+            .iter()
+            .map(|n| (n.literal.clone().unwrap(), n.info.clone().unwrap()))
+            .collect();
+        assert_eq!(m[0], ("x^2".to_string(), "inline".to_string()));
+        assert_eq!(m[1], ("y".to_string(), "inline".to_string()));
+        assert_eq!(m[2], ("z".to_string(), "display".to_string()));
+        assert_eq!(m[3].1, "display");
+        assert!(m[3].0.contains("E=mc^2"));
+        assert_eq!(m.len(), 4);
+        assert!(find(&ast, "CodeBlock").is_empty());
+        assert!(find(&ast, "Math").iter().all(|n| n.highlighted_html.is_none()));
+    }
+
+    #[test]
+    fn test_currency_stays_text() {
+        let ast = serialize_ast("It costs $5 and $10 today.\n");
+        assert!(find(&ast, "Math").is_empty());
+        let text: String = find(&ast, "Text").iter().filter_map(|n| n.literal.as_deref()).collect();
+        assert_eq!(text, "It costs $5 and $10 today.");
+    }
+
+    #[test]
+    fn test_shortcodes() {
+        let ast = serialize_ast("hi :smile: and :notanemoji:\n");
+        let text: String = find(&ast, "Text").iter().filter_map(|n| n.literal.as_deref()).collect();
+        assert_eq!(text, "hi \u{1F604} and :notanemoji:");
+        assert!(find(&ast, "Unknown").is_empty());
+    }
+
+    #[test]
+    fn test_shortcode_in_heading_toc() {
+        let ast = serialize_ast("# Party :tada:\n");
+        let toc = crate::toc::extract_toc_from_ast(&ast);
+        assert_eq!(toc[0].text, "Party \u{1F389}");
     }
 }
