@@ -7,4 +7,4 @@ Name={{{name}}}
 StartupWMClass={{{exec}}}
 Terminal=false
 Type=Application
-MimeType=text/markdown;text/x-markdown;
+MimeType=text/markdown;text/x-markdown;text/mdx;

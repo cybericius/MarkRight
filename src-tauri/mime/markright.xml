@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Installed to /usr/share/mime/packages/ by the deb and rpm packages.
+     shared-mime-info (2.1 through 2.5.1) has no MDX type and maps *.mdx to
+     application/x-genesis-32x-rom, so without this file the desktop entry's
+     text/mdx never matches. Equal glob weight on purpose: content sniffing
+     still classifies a real 32X ROM as a ROM. -->
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="text/mdx">
+    <comment>MDX document</comment>
+    <sub-class-of type="text/markdown"/>
+    <generic-icon name="text-x-generic"/>
+    <glob pattern="*.mdx"/>
+  </mime-type>
+</mime-info>

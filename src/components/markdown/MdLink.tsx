@@ -3,8 +3,8 @@ import { openDocument } from "../../stores/actions";
 import { currentPath } from "../../stores/app";
 import { resolvePath } from "../../lib/paths";
 import { openLinkedFile } from "../../lib/tauri";
+import { MARKDOWN_EXT } from "../../lib/markdown";
 
-const MARKDOWN_EXT = /\.(md|markdown|mdown|mkd)$/i;
 
 export function isExternalUrl(url: string): boolean {
   return url.startsWith("http://") || url.startsWith("https://");

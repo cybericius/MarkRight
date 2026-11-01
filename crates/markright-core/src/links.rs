@@ -24,7 +24,7 @@ pub fn resolve_in_root(root: &Path, path: &Path) -> Result<PathBuf, String> {
 /// Find the file a wikilink target refers to, Obsidian-style.
 ///
 /// `target` is the page part of `[[target]]` (a name or relative path, with or
-/// without extension; `.md` is implied when there is none). Lookup order:
+/// without extension; `.md` is implied unless it has a Markdown extension). Lookup order:
 /// relative to the linking document's folder, relative to `root`, then by file
 /// name anywhere under `root` (case-insensitive, shortest path wins; hidden
 /// entries skipped). The result is canonical and always inside `root`.
@@ -34,7 +34,7 @@ pub fn resolve_wikilink(root: &Path, from: &Path, target: &str) -> Option<PathBu
         return None;
     }
     let mut candidates = vec![target.clone()];
-    if Path::new(&target).extension().is_none_or(|e| !e.eq_ignore_ascii_case("md")) {
+    if !crate::files::is_markdown(Path::new(&target)) {
         candidates.push(format!("{target}.md"));
     }
     // A bare name like "Note.v2" has an "extension" that isn't one; try both.

@@ -4,6 +4,12 @@ All notable changes to MarkRight are documented in this file.
 
 ## [Unreleased]
 
+### Added
+- MDX documents (`.mdx`) open like Markdown: listed in the file tree, searched, linkable, and registered as a file association (the Linux packages install an MDX MIME type, since the system database classifies `.mdx` as a game ROM). Top-level `import`/`export` lines are hidden; JSX component tags are dropped and the Markdown inside them is kept
+
+### Fixed
+- `.markdown`, `.mdown`, `.mkd` and upper-case `.MD` files now appear in the file tree and in search (only lower-case `.md` did); wikilinks to them no longer get `.md` appended
+
 ## [0.3.0] — 2026-10-31
 
 ### Added

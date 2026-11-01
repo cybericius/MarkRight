@@ -4,10 +4,10 @@ import { currentPath, tree } from "../../stores/app";
 import { openDocument } from "../../stores/actions";
 import { openLinkedFile, resolveWikilink } from "../../lib/tauri";
 import { resolveImageSrc } from "../../lib/paths";
+import { MARKDOWN_EXT } from "../../lib/markdown";
 import NoteEmbed from "./NoteEmbed";
 
 const IMAGE_EXT = /\.(png|jpe?g|gif|webp|avif|svg|bmp)$/i;
-const MARKDOWN_EXT = /\.(md|markdown|mdown|mkd)$/i;
 
 // One lookup per (document, target) pair; documents often repeat links.
 // Dropped whenever the folder tree changes, so new files get found.

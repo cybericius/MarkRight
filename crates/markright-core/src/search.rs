@@ -22,7 +22,7 @@ pub struct SearchMatch {
 /// Maximum matching lines returned per file.
 const MAX_MATCHES_PER_FILE: usize = 10;
 
-/// Search all `.md` files under `root` for case-insensitive substring matches.
+/// Search all Markdown files under `root` for case-insensitive substring matches.
 ///
 /// Returns up to `max_results` files with matches. Each file includes up to
 /// [`MAX_MATCHES_PER_FILE`] matching lines with position information.
@@ -61,7 +61,7 @@ pub fn search_files(root: &Path, query: &str, max_results: usize) -> Vec<SearchR
     results
 }
 
-/// Recursively collect all `.md` file paths, skipping hidden entries.
+/// Recursively collect all Markdown file paths, skipping hidden entries.
 fn collect_md_files(dir: &Path, out: &mut Vec<PathBuf>) {
     let Ok(entries) = fs::read_dir(dir) else {
         return;
@@ -81,7 +81,7 @@ fn collect_md_files(dir: &Path, out: &mut Vec<PathBuf>) {
 
         if path.is_dir() {
             collect_md_files(&path, out);
-        } else if path.extension().is_some_and(|ext| ext == "md") {
+        } else if crate::files::is_markdown(&path) {
             out.push(path);
         }
     }
@@ -204,5 +204,15 @@ mod tests {
         assert_eq!(results[0].matches.len(), 2);
         assert_eq!(results[0].matches[0].line_number, 1);
         assert_eq!(results[0].matches[1].line_number, 3);
+    }
+
+    #[test]
+    fn test_search_includes_mdx() {
+        let dir = tempfile::tempdir().unwrap();
+        fs::write(dir.path().join("page.mdx"), "find me").unwrap();
+        fs::write(dir.path().join("note.txt"), "find me").unwrap();
+        let results = search_files(dir.path(), "find", 10);
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].name, "page.mdx");
     }
 }

@@ -10,7 +10,8 @@ pub struct TreeNode {
     pub children: Vec<TreeNode>,
 }
 
-/// Recursively scan a directory and build a tree of `.md` files.
+/// Recursively scan a directory and build a tree of Markdown files
+/// (see [`crate::files::MARKDOWN_EXTENSIONS`]).
 ///
 /// # Errors
 ///
@@ -48,7 +49,7 @@ pub fn build_tree(root: &Path) -> std::io::Result<Vec<TreeNode>> {
                     children,
                 });
             }
-        } else if path.extension().is_some_and(|ext| ext == "md") {
+        } else if crate::files::is_markdown(&path) {
             nodes.push(TreeNode {
                 name,
                 path,
@@ -82,5 +83,15 @@ mod tests {
         let tree = build_tree(dir.path()).unwrap();
         assert_eq!(tree.len(), 1);
         assert_eq!(tree[0].name, "readme.md");
+    }
+
+    #[test]
+    fn test_build_tree_lists_every_markdown_extension() {
+        let dir = tempfile::tempdir().unwrap();
+        for f in ["a.md", "b.MD", "c.mdx", "d.markdown", "e.txt"] {
+            fs::write(dir.path().join(f), "# x").unwrap();
+        }
+        let names: Vec<_> = build_tree(dir.path()).unwrap().into_iter().map(|n| n.name).collect();
+        assert_eq!(names, ["a.md", "b.MD", "c.mdx", "d.markdown"]);
     }
 }

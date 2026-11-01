@@ -41,14 +41,25 @@
         "ext": ["md", "markdown", "mdown", "mkd"],
         "mimeType": "text/markdown",
         "description": "Markdown Document"
+      },
+      {
+        "ext": ["mdx"],
+        "mimeType": "text/mdx",
+        "description": "MDX Document"
       }
     ],
     "linux": {
       "deb": {
-        "desktopTemplate": "desktop-template.desktop"
+        "desktopTemplate": "desktop-template.desktop",
+        "files": {
+          "/usr/share/mime/packages/markright.xml": "mime/markright.xml"
+        }
       },
       "rpm": {
-        "desktopTemplate": "desktop-template.desktop"
+        "desktopTemplate": "desktop-template.desktop",
+        "files": {
+          "/usr/share/mime/packages/markright.xml": "mime/markright.xml"
+        }
       }
     }
   }

@@ -1,6 +1,7 @@
 pub mod alert;
 pub mod ast;
 pub mod config;
+pub mod files;
 pub mod frontmatter;
 pub mod image;
 pub mod license;

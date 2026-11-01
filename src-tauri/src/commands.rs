@@ -57,7 +57,8 @@ pub fn get_document(path: String, code_theme: Option<String>) -> Result<Document
     let theme = code_theme.as_deref().unwrap_or("ocean");
 
     let (frontmatter, body) = strip_frontmatter(&content);
-    let ast = serialize_ast_themed(body, theme);
+    let body = markright_core::files::render_body(&path, body);
+    let ast = serialize_ast_themed(&body, theme);
     let toc = extract_toc_from_ast(&ast);
 
     Ok(DocumentResponse {
@@ -75,7 +76,8 @@ pub fn get_toc(path: String) -> Result<Vec<TocEntry>, String> {
     let content = std::fs::read_to_string(&path).map_err(|e| e.to_string())?;
 
     let (_, body) = strip_frontmatter(&content);
-    let ast = serialize_ast_themed(body, "ocean");
+    let body = markright_core::files::render_body(&path, body);
+    let ast = serialize_ast_themed(&body, "ocean");
     Ok(extract_toc_from_ast(&ast))
 }
 
