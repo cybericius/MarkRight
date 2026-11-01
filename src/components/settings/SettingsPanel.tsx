@@ -234,6 +234,12 @@ const SettingsPanel: Component = () => {
         <Section title="License">
           <LicenseSection />
         </Section>
+
+        <Section title="About">
+          <Row label="Version">
+            <span class="text-sm tabular-nums text-gray-600 select-text dark:text-gray-300">v{__APP_VERSION__}</span>
+          </Row>
+        </Section>
       </div>
     </div>
   );
