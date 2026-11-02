@@ -1,14 +1,52 @@
 import { Component, Show, onCleanup, onMount, createEffect, createMemo } from "solid-js";
-import { ast, setActiveTocId, findBarOpen, setFindBarOpen, zoom, contentWidth, setIsFullscreen } from "../../stores/app";
+import { ast, setActiveTocId, findBarOpen, setFindBarOpen, zoom, contentWidth, setIsFullscreen, showSettings } from "../../stores/app";
 import { updateConfig } from "../../stores/actions";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import MdRenderer from "../markdown/MdRenderer";
 import FindBar from "../search/FindBar";
 
+function isEditable(el: Element | null): boolean {
+  return (
+    el instanceof HTMLInputElement ||
+    el instanceof HTMLTextAreaElement ||
+    el instanceof HTMLSelectElement ||
+    (el instanceof HTMLElement && el.isContentEditable)
+  );
+}
+
+// Keys that scroll the document when nothing else has focus
+const SCROLL_KEYS = new Set(["PageDown", "PageUp", "Home", "End", "ArrowDown", "ArrowUp", " "]);
+
 const ContentArea: Component = () => {
   let contentRef: HTMLElement | undefined;
   let docRef: HTMLDivElement | undefined;
   let observer: IntersectionObserver | undefined;
+
+  // Give the document keyboard focus so Page Down etc. scroll it without a
+  // click first. Typing in an input (search, find bar) keeps its focus.
+  const focusContent = () => {
+    if (contentRef && !isEditable(document.activeElement)) {
+      contentRef.focus({ preventScroll: true });
+    }
+  };
+
+  // Scroll the document for a scroll key pressed while focus is on <body>,
+  // e.g. after the find bar or settings closed and took focus with them.
+  const scrollByKey = (e: KeyboardEvent): boolean => {
+    const el = contentRef;
+    if (!el || e.ctrlKey || e.metaKey || e.altKey || !SCROLL_KEYS.has(e.key)) return false;
+    const page = Math.max(40, el.clientHeight - 40);
+    switch (e.key) {
+      case "PageDown": el.scrollBy({ top: page }); break;
+      case "PageUp": el.scrollBy({ top: -page }); break;
+      case " ": el.scrollBy({ top: e.shiftKey ? -page : page }); break;
+      case "ArrowDown": el.scrollBy({ top: 40 }); break;
+      case "ArrowUp": el.scrollBy({ top: -40 }); break;
+      case "Home": el.scrollTo({ top: 0 }); break;
+      case "End": el.scrollTo({ top: el.scrollHeight }); break;
+    }
+    return true;
+  };
 
   createEffect(() => {
     const currentAst = ast();
@@ -20,6 +58,8 @@ const ContentArea: Component = () => {
 
     // Wait for DOM to render
     requestAnimationFrame(() => {
+      focusContent();
+
       const headings = contentRef!.querySelectorAll<HTMLElement>(
         "h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]"
       );
@@ -54,16 +94,17 @@ const ContentArea: Component = () => {
   });
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    const active = document.activeElement;
+    // Not while the settings dialog covers the document
+    if ((!active || active === document.body) && !showSettings() && scrollByKey(e)) {
+      e.preventDefault();
+      focusContent();
+      return;
+    }
     // Ctrl+A selects only the document body, not sidebars/status bar.
     // Text inputs (FindBar, search, settings) keep their native select-all.
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === "a") {
-      const target = e.target as HTMLElement | null;
-      const isEditable =
-        target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement ||
-        target?.isContentEditable;
-      if (!isEditable && docRef) {
+      if (!isEditable(e.target as Element | null) && docRef) {
         e.preventDefault();
         const range = document.createRange();
         range.selectNodeContents(docRef);
@@ -98,7 +139,10 @@ const ContentArea: Component = () => {
     }
   };
 
-  onMount(() => window.addEventListener("keydown", handleKeyDown));
+  onMount(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    focusContent();
+  });
   onCleanup(() => {
     observer?.disconnect();
     window.removeEventListener("keydown", handleKeyDown);
@@ -106,7 +150,7 @@ const ContentArea: Component = () => {
 
   return (
     <div class="flex min-w-0 flex-1 flex-col">
-      <main ref={contentRef} class="min-w-0 flex-1 overflow-y-auto p-8">
+      <main ref={contentRef} tabIndex={-1} class="min-w-0 flex-1 overflow-y-auto p-8 outline-none">
         <div ref={docRef} class={`mx-auto ${widthClass()}`} style={{ zoom: `${zoom()}%` }}>
           <Show
             when={ast()}

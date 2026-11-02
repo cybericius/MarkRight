@@ -4,6 +4,9 @@ All notable changes to MarkRight are documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Page Down, Page Up, Home, End, Space and the arrow keys scroll the document right after it opens, without clicking into it first
+
 ## [0.3.1] — 2026-11-02
 
 ### Added
