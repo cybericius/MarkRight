@@ -1,0 +1,1 @@
+A plain text file. Clicking a relative link to it opens it in the default app.
