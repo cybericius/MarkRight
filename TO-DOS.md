@@ -1,11 +1,13 @@
 # MarkRight — Roadmap & Tasks
 
+> **Frozen 2026-11-02:** open work now lives in GitHub issues in cybericius/MarkRight; new items go to GitHub via gh-issue-new.sh, not here.
+
 ## Phase 0: Project Bootstrap
 - [x] Initialize Tauri v2 + SolidJS + Vite project
 - [x] Set up Cargo workspace with `markright-core` crate
 - [x] CI: GitHub Actions build on Linux/macOS/Windows + Rust tests
 - [x] AGPL-3.0 license, project scaffolding
-- [ ] Coding conventions (clippy strict, ESLint+Prettier)
+- [x] ~~Coding conventions (clippy strict, ESLint+Prettier)~~ → moved to cybericius/MarkRight#1
 
 ## Phase 1a: Core Viewer
 - [x] **Rust**: comrak integration, AST→JSON serialization
@@ -23,13 +25,13 @@
 
 ## Phase 1b: Search & Polish
 - [x] **Rust**: Simple grep-like text search across `.md` files
-- [ ] **Rust**: File watcher (notify), auto-reload on changes
+- [x] ~~**Rust**: File watcher (notify), auto-reload on changes~~ → moved to cybericius/MarkRight#2
 - [x] **UI**: Search panel with results, snippets, navigate to match
 - [x] **UI**: Light/dark theme with system detection
-- [ ] **UI**: Command palette (Ctrl+P) for quick document switch
-- [ ] **UI**: Keyboard shortcuts for panel toggling, tree navigation
-- [ ] **UI**: Responsive layout (panels collapse on narrow windows)
-- [ ] **UI**: `SUMMARY.md` support for custom tree ordering
+- [x] ~~**UI**: Command palette (Ctrl+P) for quick document switch~~ → moved to cybericius/MarkRight#3
+- [x] ~~**UI**: Keyboard shortcuts for panel toggling, tree navigation~~ → moved to cybericius/MarkRight#4
+- [x] ~~**UI**: Responsive layout (panels collapse on narrow windows)~~ → moved to cybericius/MarkRight#5
+- [x] ~~**UI**: `SUMMARY.md` support for custom tree ordering~~ → moved to cybericius/MarkRight#6
 - [x] **Settings**: Persistent config (`~/.config/markright/settings.json`)
 - [x] **Settings**: Content font family, size, line height controls
 - [x] **Settings**: UI font family, size controls
@@ -64,8 +66,8 @@ Each comrak extension also needs an `ast.rs` mapping + `MdRenderer` branch (unma
 - [x] **Render**: Graphviz (```` ```dot ```` / ```` ```graphviz ````) via lazy `@viz-js/viz`; links stripped from SVG, CSP allows `'wasm-unsafe-eval'`
 
 ## Phase 1c: Release v1.0
-- [ ] Platform testing (Windows, macOS, Linux)
-- [ ] Signed builds + auto-update (Tauri updater plugin)
-- [ ] App icon and branding
-- [ ] User documentation (dogfooded in MarkRight itself)
-- [ ] Release: GitHub, Homebrew, Scoop/Winget, AUR
+- [x] ~~Platform testing (Windows, macOS, Linux)~~ → moved to cybericius/MarkRight#7
+- [x] ~~Signed builds + auto-update (Tauri updater plugin)~~ → moved to cybericius/MarkRight#8
+- [x] ~~App icon and branding~~ → moved to cybericius/MarkRight#9
+- [x] ~~User documentation (dogfooded in MarkRight itself)~~ → moved to cybericius/MarkRight#10
+- [x] ~~Release: GitHub, Homebrew, Scoop/Winget, AUR~~ → moved to cybericius/MarkRight#11
