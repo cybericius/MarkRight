@@ -4,6 +4,8 @@ All notable changes to MarkRight are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.2] — 2026-11-02
+
 ### Fixed
 - MDX: component tags with `{…}` expressions (`<Chart data={[1, 2]} />`, `{...props}`, multi-line props) and `{/* comments */}` are hidden instead of showing as text
 - Windows: installing repairs "Open with" entries that still point at an earlier MarkRight install in another folder, and uninstalling removes MarkRight's entries
