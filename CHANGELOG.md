@@ -5,6 +5,7 @@ All notable changes to MarkRight are documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- MDX: component tags with `{…}` expressions (`<Chart data={[1, 2]} />`, `{...props}`, multi-line props) and `{/* comments */}` are hidden instead of showing as text
 - Windows: installing repairs "Open with" entries that still point at an earlier MarkRight install in another folder, and uninstalling removes MarkRight's entries
 - Page Down, Page Up, Home, End, Space and the arrow keys scroll the document right after it opens, without clicking into it first
 
