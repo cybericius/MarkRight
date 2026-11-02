@@ -5,6 +5,7 @@ All notable changes to MarkRight are documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Windows: installing repairs "Open with" entries that still point at an earlier MarkRight install in another folder, and uninstalling removes MarkRight's entries
 - Page Down, Page Up, Home, End, Space and the arrow keys scroll the document right after it opens, without clicking into it first
 
 ## [0.3.1] — 2026-11-02

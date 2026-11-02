@@ -1,9 +1,9 @@
 //! Which files the app treats as Markdown documents.
 //!
 //! The single list every Rust caller uses (tree, search, wikilinks). The
-//! frontend keeps the same list in `src/lib/markdown.ts`, and the OS file
-//! associations in `src-tauri/tauri.conf.json`; a test below keeps all three
-//! in sync.
+//! frontend keeps the same list in `src/lib/markdown.ts`, the OS file
+//! associations in `src-tauri/tauri.conf.json`, and the Windows installer
+//! hooks in `src-tauri/windows/hooks.nsh`; a test below keeps them in sync.
 
 use std::borrow::Cow;
 use std::path::Path;
@@ -216,6 +216,14 @@ mod tests {
             })
             .collect();
 
+        // Windows installer hooks: `!insertmacro ${_MACRO} "md"` lines
+        let nsh = std::fs::read_to_string(root.join("src-tauri/windows/hooks.nsh")).unwrap();
+        let mut nsh_exts: Vec<String> = nsh
+            .lines()
+            .filter_map(|l| l.trim().strip_prefix("!insertmacro ${_MACRO} \""))
+            .map(|rest| rest.trim_end_matches('"').to_string())
+            .collect();
+
         let mut rust: Vec<String> = MARKDOWN_EXTENSIONS
             .iter()
             .map(|s| (*s).to_string())
@@ -223,7 +231,9 @@ mod tests {
         rust.sort();
         ts_exts.sort();
         conf_exts.sort();
+        nsh_exts.sort();
         assert_eq!(ts_exts, rust, "src/lib/markdown.ts");
         assert_eq!(conf_exts, rust, "tauri.conf.json fileAssociations");
+        assert_eq!(nsh_exts, rust, "src-tauri/windows/hooks.nsh MR_EACH_EXT");
     }
 }

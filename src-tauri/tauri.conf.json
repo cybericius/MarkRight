@@ -48,6 +48,11 @@
         "description": "MDX Document"
       }
     ],
+    "windows": {
+      "nsis": {
+        "installerHooks": "./windows/hooks.nsh"
+      }
+    },
     "linux": {
       "deb": {
         "desktopTemplate": "desktop-template.desktop",
