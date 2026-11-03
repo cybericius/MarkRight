@@ -4,6 +4,11 @@ All notable changes to MarkRight are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.3] — 2026-11-03
+
+### Changed
+- Pro licenses are verified with a new signing key. Licenses issued before 0.3.3 are no longer accepted; contact us for a replacement key
+
 ## [0.3.2] — 2026-11-02
 
 ### Fixed
