@@ -24,10 +24,25 @@ struct LicensePayload {
     tier: String,
 }
 
-/// Verify a license token string.
+/// Decode the built-in production public key.
+fn production_key() -> Option<VerifyingKey> {
+    let pub_bytes = B64.decode(PUBLIC_KEY_B64).ok()?;
+    let pub_array: [u8; PUBLIC_KEY_LENGTH] = pub_bytes.try_into().ok()?;
+    VerifyingKey::from_bytes(&pub_array).ok()
+}
+
+/// Verify a license token string against the production public key.
 ///
 /// Token format: `base64(json_payload).base64(ed25519_signature)`
 pub fn verify_license(token: &str) -> LicenseStatus {
+    match production_key() {
+        Some(key) => verify_license_with_key(token, &key),
+        None => LicenseStatus::default(),
+    }
+}
+
+/// Verify a license token string against the given public key.
+fn verify_license_with_key(token: &str, verifying_key: &VerifyingKey) -> LicenseStatus {
     let Some((payload_b64, sig_b64)) = token.split_once('.') else {
         return LicenseStatus::default();
     };
@@ -37,18 +52,6 @@ pub fn verify_license(token: &str) -> LicenseStatus {
     };
 
     let Ok(sig_bytes) = B64.decode(sig_b64) else {
-        return LicenseStatus::default();
-    };
-
-    let Ok(pub_bytes) = B64.decode(PUBLIC_KEY_B64) else {
-        return LicenseStatus::default();
-    };
-
-    let Ok(pub_array): Result<[u8; PUBLIC_KEY_LENGTH], _> = pub_bytes.try_into() else {
-        return LicenseStatus::default();
-    };
-
-    let Ok(verifying_key) = VerifyingKey::from_bytes(&pub_array) else {
         return LicenseStatus::default();
     };
 
@@ -93,19 +96,21 @@ mod tests {
     use super::*;
     use ed25519_dalek::{Signer, SigningKey};
 
-    /// Test secret key (base64). Must match the production public key above.
-    const SECRET_KEY_B64: &str = "REDACTED";
+    /// Throwaway key for tests only. It is NOT the production key, and the
+    /// production signing key must never appear in this repository.
+    fn test_key() -> SigningKey {
+        SigningKey::from_bytes(&[7u8; 32])
+    }
 
     fn sign_token(payload_json: &str) -> String {
-        let secret_bytes = B64.decode(SECRET_KEY_B64).unwrap();
-        let secret_array: [u8; 32] = secret_bytes.try_into().unwrap();
-        let signing_key = SigningKey::from_bytes(&secret_array);
-
         let payload_b64 = B64.encode(payload_json.as_bytes());
-        let sig = signing_key.sign(payload_b64.as_bytes());
+        let sig = test_key().sign(payload_b64.as_bytes());
         let sig_b64 = B64.encode(sig.to_bytes());
-
         format!("{payload_b64}.{sig_b64}")
+    }
+
+    fn verify(token: &str) -> LicenseStatus {
+        verify_license_with_key(token, &test_key().verifying_key())
     }
 
     fn valid_payload() -> String {
@@ -114,23 +119,34 @@ mod tests {
     }
 
     #[test]
+    fn production_key_decodes() {
+        assert!(production_key().is_some());
+    }
+
+    #[test]
+    fn test_key_is_not_production_key() {
+        assert_ne!(Some(test_key().verifying_key()), production_key());
+    }
+
+    #[test]
     fn valid_token() {
-        let token = sign_token(&valid_payload());
-        let status = verify_license(&token);
+        let status = verify(&sign_token(&valid_payload()));
         assert!(status.valid);
         assert_eq!(status.email.as_deref(), Some("test@example.com"));
         assert_eq!(status.tier.as_deref(), Some("pro"));
     }
 
     #[test]
+    fn test_signed_token_rejected_by_production_key() {
+        assert!(!verify_license(&sign_token(&valid_payload())).valid);
+    }
+
+    #[test]
     fn tampered_payload() {
         let token = sign_token(&valid_payload());
         let (_, sig) = token.split_once('.').unwrap();
-        // Replace payload with different content
         let tampered_payload = B64.encode(b"{\"email\":\"hacker@evil.com\",\"issued_at\":\"2026-01-01T00:00:00Z\",\"tier\":\"pro\"}");
-        let tampered = format!("{tampered_payload}.{sig}");
-        let status = verify_license(&tampered);
-        assert!(!status.valid);
+        assert!(!verify(&format!("{tampered_payload}.{sig}")).valid);
     }
 
     #[test]
@@ -138,9 +154,7 @@ mod tests {
         let token = sign_token(&valid_payload());
         let (payload, _) = token.split_once('.').unwrap();
         let bad_sig = B64.encode([0u8; SIGNATURE_LENGTH]);
-        let tampered = format!("{payload}.{bad_sig}");
-        let status = verify_license(&tampered);
-        assert!(!status.valid);
+        assert!(!verify(&format!("{payload}.{bad_sig}")).valid);
     }
 
     #[test]
@@ -152,53 +166,24 @@ mod tests {
 
     #[test]
     fn bad_format_not_base64() {
-        let status = verify_license("!!!.!!!");
-        assert!(!status.valid);
+        assert!(!verify_license("!!!.!!!").valid);
     }
 
     #[test]
     fn empty_token() {
-        let status = verify_license("");
-        assert!(!status.valid);
+        assert!(!verify_license("").valid);
     }
 
     #[test]
     fn license_file_missing() {
-        let dir = std::env::temp_dir().join("markright_test_no_license");
-        let _ = std::fs::create_dir_all(&dir);
-        let status = check_license_file(&dir);
-        assert!(!status.valid);
-    }
-
-    #[test]
-    fn license_file_valid() {
         let dir = tempfile::tempdir().unwrap();
-        let token = sign_token(&valid_payload());
-        std::fs::write(dir.path().join("license.key"), &token).unwrap();
-        let status = check_license_file(dir.path());
-        assert!(status.valid);
-        assert_eq!(status.email.as_deref(), Some("test@example.com"));
+        assert!(!check_license_file(dir.path()).valid);
     }
 
-    /// End-to-end: sign with production key, verify with production public key.
     #[test]
-    fn production_token_roundtrip() {
-        let token = sign_token(
-            r#"{"email":"test@example.com","issued_at":"2026-02-25T00:00:00Z","tier":"pro"}"#,
-        );
-        let status = verify_license(&token);
-        assert!(status.valid, "Production-signed token must verify");
-        assert_eq!(status.email.as_deref(), Some("test@example.com"));
-        assert_eq!(status.tier.as_deref(), Some("pro"));
-    }
-
-    /// Verify an externally-generated token (from the signing tool).
-    #[test]
-    fn verify_externally_signed_token() {
-        let token = "REDACTED";
-        let status = verify_license(token);
-        assert!(status.valid, "Externally signed token must verify");
-        assert_eq!(status.email.as_deref(), Some("test@example.com"));
-        assert_eq!(status.tier.as_deref(), Some("pro"));
+    fn license_file_with_foreign_signature_rejected() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("license.key"), sign_token(&valid_payload())).unwrap();
+        assert!(!check_license_file(dir.path()).valid);
     }
 }
