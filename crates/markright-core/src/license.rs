@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::path::Path;
 
 /// Production public key for license verification (Ed25519, 32 bytes, base64-encoded).
-const PUBLIC_KEY_B64: &str = "1Q8KGzZ76kk/wKEY5wLlqDt8xnqK4T6d/wG8Zi/nELE=";
+const PUBLIC_KEY_B64: &str = "Es1YykTZkMsOxXt92p73OomoMX1w0rGv1Pr+N1vR0t8=";
 
 /// Result of verifying a license token.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
